@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LinguaFlow - 올인원 영어 학습</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts (Pretendard, Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans KR"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            },
+            accent: {
+              500: '#10b981',
+              600: '#059669',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* 3D Card Flip styles */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+    
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Pulse animation for microphone */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.4; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .recording-pulse {
+      animation: pulse-ring 1.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex justify-center items-center selection:bg-blue-100 selection:text-blue-700">
+
+  <!-- Mobile App Frame Container (Desktop에서는 폰 프레임, 모바일에서는 풀스크린) -->
+  <div id="app-frame" class="w-full max-w-md h-screen max-h-[920px] bg-white flex flex-col shadow-2xl overflow-hidden sm:rounded-3xl border border-slate-200 relative">
+    
+    <!-- Top Header Bar -->
+    <header class="px-5 py-3.5 bg-white border-b border-slate-100 flex items-center justify-between z-10">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-bold tracking-tight text-slate-900 leading-none">LinguaFlow</h1>
+          <span id="streak-badge" class="text-xs font-semibold text-amber-600 flex items-center gap-1 mt-0.5">
+            <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i>
+            <span>3일 연속 학습 중</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btn-api-modal" onclick="openSettingsModal()" class="p-2 text-slate-500 hover:text-slate-800 rounded-full hover:bg-slate-100 transition-colors" title="AI 설정">
+          <i data-lucide="settings" class="w-5 h-5"></i>
+        </button>
+        <button id="btn-sound-test" onclick="speakText('Welcome to LinguaFlow!')" class="p-2 text-slate-500 hover:text-blue-600 rounded-full hover:bg-slate-100 transition-colors" title="음성 테스트">
+          <i data-lucide="volume-2" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area (Dynamic Tabs) -->
+    <main id="main-content" class="flex-1 overflow-y-auto pb-20 relative bg-slate-50/50">
+      
+      <!-- ============================================== -->
+      <!-- TAB 1: 단어장 & 플래시카드 (Vocab & Flashcards) -->
+      <!-- ============================================== -->
+      <section id="tab-vocab" class="tab-panel p-4 space-y-4">
+        <!-- Sub Header & Mode Toggle -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">단어장 & 퀴즈</h2>
+            <p class="text-xs text-slate-500">카드를 뒤집어 외우고 퀴즈로 확인하세요</p>
+          </div>
+          <div class="flex bg-slate-200/80 p-0.5 rounded-lg text-xs font-medium">
+            <button id="btn-mode-card" onclick="setVocabMode('card')" class="px-3 py-1.5 rounded-md bg-white text-blue-600 shadow-sm font-semibold transition-all">플래시카드</button>
+            <button id="btn-mode-quiz" onclick="setVocabMode('quiz')" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all">단어 퀴즈</button>
+          </div>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+          <button onclick="filterVocab('all')" class="cat-pill px-3 py-1.5 rounded-full bg-blue-600 text-white font-medium shadow-sm transition-colors whitespace-nowrap active" data-cat="all">전체</button>
+          <button onclick="filterVocab('daily')" class="cat-pill px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium hover:border-slate-300 transition-colors whitespace-nowrap" data-cat="daily">일상 생활</button>
+          <button onclick="filterVocab('business')" class="cat-pill px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium hover:border-slate-300 transition-colors whitespace-nowrap" data-cat="business">비즈니스</button>
+          <button onclick="filterVocab('travel')" class="cat-pill px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium hover:border-slate-300 transition-colors whitespace-nowrap" data-cat="travel">여행</button>
+        </div>
+
+        <!-- Card Mode View -->
+        <div id="vocab-card-view" class="space-y-4">
+          <!-- 3D Flashcard -->
+          <div class="perspective-1000 w-full h-64 cursor-pointer" onclick="flipCurrentCard()">
+            <div id="flashcard-inner" class="relative w-full h-full duration-500 transform-style-3d shadow-lg rounded-2xl border border-slate-200/80">
+              
+              <!-- Front Side (English) -->
+              <div class="absolute w-full h-full backface-hidden rounded-2xl bg-gradient-to-br from-white to-slate-50 p-6 flex flex-col justify-between border-t-4 border-blue-500">
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                  <span id="card-category" class="font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Category</span>
+                  <span id="card-counter">1 / 10</span>
+                </div>
+                <div class="text-center py-4">
+                  <h3 id="card-word" class="text-3xl font-extrabold text-slate-900 tracking-tight">Consistent</h3>
+                  <p id="card-phonetic" class="text-sm text-slate-400 mt-1">[kənˈsɪstənt]</p>
+                  <p class="text-xs text-slate-400 mt-4 flex items-center justify-center gap-1">
+                    <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> 클릭하여 한글 뜻 확인
+                  </p>
+                </div>
+                <div class="flex justify-center">
+                  <button onclick="event.stopPropagation(); speakCurrentWord();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-semibold transition-colors">
+                    <i data-lucide="volume-2" class="w-4 h-4"></i> 발음 듣기
+                  </button>
+                </div>
+              </div>
+
+              <!-- Back Side (Korean & Example) -->
+              <div class="absolute w-full h-full backface-hidden rotate-y-180 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-6 flex flex-col justify-between">
+                <div class="flex justify-between items-center text-xs text-blue-200">
+                  <span id="card-part-of-speech" class="bg-blue-800/60 px-2 py-0.5 rounded font-mono">형용사</span>
+                  <span>클릭하여 앞면으로</span>
+                </div>
+                <div class="text-center py-2">
+                  <h3 id="card-meaning" class="text-2xl font-bold tracking-tight mb-2">일관된, 거듭되는</h3>
+                  <div class="bg-white/10 rounded-xl p-3 text-left border border-white/15">
+                    <p id="card-example-en" class="text-xs font-medium text-blue-50">"He was consistent in his daily exercise."</p>
+                    <p id="card-example-kr" class="text-[11px] text-blue-200 mt-1">그는 매일 일관되게 운동을 했다.</p>
+                  </div>
+                </div>
+                <div class="flex justify-center">
+                  <button onclick="event.stopPropagation(); speakCurrentExample();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 text-white hover:bg-white/30 text-xs font-medium transition-colors">
+                    <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> 예문 듣기
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls: Prev, Next, Know / Review -->
+          <div class="flex items-center justify-between gap-3 pt-2">
+            <button onclick="prevCard()" class="p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm active:scale-95 transition-transform">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <div class="flex-1 flex gap-2">
+              <button onclick="markCard(false)" class="flex-1 py-3 rounded-xl bg-rose-50 text-rose-600 font-semibold text-xs border border-rose-200 hover:bg-rose-100 active:scale-98 transition-all flex items-center justify-center gap-1.5">
+                <i data-lucide="x" class="w-4 h-4"></i> 아직 헷갈려요
+              </button>
+              <button onclick="markCard(true)" class="flex-1 py-3 rounded-xl bg-emerald-50 text-emerald-600 font-semibold text-xs border border-emerald-200 hover:bg-emerald-100 active:scale-98 transition-all flex items-center justify-center gap-1.5">
+                <i data-lucide="check" class="w-4 h-4"></i> 다 외웠어요
+              </button>
+            </div>
+            <button onclick="nextCard()" class="p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm active:scale-95 transition-transform">
+              <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quiz Mode View (Hidden by default) -->
+        <div id="vocab-quiz-view" class="hidden space-y-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div class="flex justify-between items-center text-xs text-slate-500">
+              <span class="font-bold text-blue-600">QUIZ</span>
+              <span id="quiz-score">Score: 0</span>
+            </div>
+            <div class="text-center py-4">
+              <span class="text-xs text-slate-400">다음 단어의 올바른 뜻을 고르세요</span>
+              <h3 id="quiz-question-word" class="text-2xl font-black text-slate-800 mt-1">Eloquent</h3>
+              <button onclick="speakText(document.getElementById('quiz-question-word').innerText)" class="mt-2 text-xs text-blue-600 flex items-center gap-1 mx-auto hover:underline">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> 발음 듣기
+              </button>
+            </div>
+            <div id="quiz-options-container" class="space-y-2">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+          <button onclick="loadNextQuizQuestion()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/20 active:scale-98 transition-transform">
+            다음 문제로 넘어가기
+          </button>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 2: 쉐도잉 & 리스닝 (Shadowing & Listening) -->
+      <!-- ============================================== -->
+      <section id="tab-shadowing" class="tab-panel hidden p-4 space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">쉐도잉 & 발음 평가</h2>
+          <p class="text-xs text-slate-500">원어민 발음을 듣고 똑같이 따라 말해보세요</p>
+        </div>
+
+        <!-- Sentence Card -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between text-xs">
+            <span id="shadow-topic-badge" class="px-2.5 py-1 bg-indigo-50 text-indigo-600 font-semibold rounded-lg">일상 회화</span>
+            <span id="shadow-counter" class="text-slate-400">문장 1 / 8</span>
+          </div>
+
+          <div class="text-center py-4 space-y-2">
+            <p id="shadow-target-en" class="text-xl font-bold text-slate-800 leading-snug">
+              "Could you please elaborate on that point?"
+            </p>
+            <p id="shadow-target-kr" class="text-xs text-slate-500 font-medium">
+              그 점에 대해 조금 더 자세히 설명해 주시겠어요?
+            </p>
+          </div>
+
+          <!-- Listening Controls (Speed, Replay) -->
+          <div class="flex items-center justify-center gap-3 pt-2 border-t border-slate-100">
+            <button onclick="playShadowingAudio(0.8)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium flex items-center gap-1.5 transition-colors">
+              <i data-lucide="turtle" class="w-3.5 h-3.5"></i> 0.8x 느리게
+            </button>
+            <button onclick="playShadowingAudio(1.0)" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 flex items-center gap-1.5 active:scale-95 transition-all">
+              <i data-lucide="volume-2" class="w-4 h-4"></i> 원어민 발음 듣기
+            </button>
+          </div>
+        </div>
+
+        <!-- Voice Recording & Shadowing Practice Box -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm text-center space-y-4">
+          <p class="text-xs font-semibold text-slate-500">내 발음 녹음하고 채점받기</p>
+
+          <!-- Mic Record Button -->
+          <div class="relative inline-block my-2">
+            <div id="mic-pulse-ring" class="hidden absolute inset-0 rounded-full bg-red-400/30 recording-pulse scale-125"></div>
+            <button id="btn-record-shadow" onclick="toggleShadowRecording()" class="relative z-10 w-20 h-20 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 hover:bg-rose-600 active:scale-95 transition-transform">
+              <i id="mic-icon" data-lucide="mic" class="w-8 h-8"></i>
+            </button>
+          </div>
+          
+          <p id="record-status-text" class="text-xs text-slate-400">버튼을 누르고 영어로 말하세요</p>
+
+          <!-- Recognized Speech Result & Accuracy -->
+          <div id="shadow-result-box" class="hidden bg-slate-50 rounded-xl p-4 border border-slate-200 text-left space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-600">인식된 발음:</span>
+              <span id="shadow-accuracy-score" class="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">일치도: 92%</span>
+            </div>
+            <p id="shadow-recognized-text" class="text-sm text-slate-800 font-medium italic"></p>
+            <div id="shadow-feedback-text" class="text-xs text-slate-500 pt-1 border-t border-slate-200/60"></div>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center">
+          <button onclick="prevShadowSentence()" class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 shadow-sm flex items-center gap-1">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i> 이전 문장
+          </button>
+          <button onclick="nextShadowSentence()" class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 shadow-sm flex items-center gap-1">
+            다음 문장 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 3: AI 회화 튜터 (AI Conversation Tutor)   -->
+      <!-- ============================================== -->
+      <section id="tab-tutor" class="tab-panel hidden flex flex-col h-full p-4 space-y-3">
+        <!-- Tutor Top Bar -->
+        <div class="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <div class="relative">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                AI
+              </div>
+              <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+            </div>
+            <div>
+              <div class="flex items-center gap-1">
+                <h2 class="text-xs font-bold text-slate-900">클로이 튜터 (Chloe)</h2>
+                <span class="text-[10px] text-blue-600 font-medium bg-blue-50 px-1.5 py-0.2 rounded">원어민 코치</span>
+              </div>
+              <!-- Scenario Selector Dropdown -->
+              <select id="scenario-selector" onchange="changeScenario(this.value)" class="text-[11px] font-medium text-slate-600 bg-slate-100 rounded px-2 py-0.5 mt-0.5 border-none outline-none cursor-pointer">
+                <option value="cafe">☕ 카페에서 주문하기</option>
+                <option value="airport">✈️ 공항 입국 심사</option>
+                <option value="interview">💼 영어 면접 연습</option>
+                <option value="free">💬 일상 자유 대화</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="resetConversation()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100" title="대화 초기화">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Chat Messages Container -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 p-1 min-h-[340px] max-h-[460px]">
+          <!-- Messages will be dynamically rendered here -->
+        </div>
+
+        <!-- Feedback Drawer (Grammar & Natural Expression Tip) -->
+        <div id="tutor-feedback-card" class="hidden bg-amber-50/80 border border-amber-200 rounded-xl p-3 text-xs space-y-1 transition-all">
+          <div class="flex items-center justify-between text-amber-800 font-bold">
+            <span class="flex items-center gap-1"><i data-lucide="lightbulb" class="w-3.5 h-3.5 text-amber-600"></i> AI 표현 피드백 & 교정</span>
+            <button onclick="document.getElementById('tutor-feedback-card').classList.add('hidden')" class="text-amber-500 hover:text-amber-800">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <p id="tutor-feedback-content" class="text-amber-900 leading-relaxed"></p>
+        </div>
+
+        <!-- Chat Input Form -->
+        <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-2">
+          <button id="btn-chat-mic" onclick="toggleChatVoiceInput()" class="p-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-600 active:scale-95 transition-all" title="음성으로 말하기">
+            <i data-lucide="mic" class="w-5 h-5"></i>
+          </button>
+          <input type="text" id="chat-input-text" placeholder="영어로 대답해보세요 (한국어도 가능)..." class="flex-1 bg-transparent text-xs text-slate-800 placeholder-slate-400 outline-none px-1" onkeydown="if(event.key === 'Enter') sendChatMessage()">
+          <button onclick="sendChatMessage()" class="p-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition-all shadow-sm">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 4: 문장 만들기 & 영작 (Sentence Builder)   -->
+      <!-- ============================================== -->
+      <section id="tab-sentence" class="tab-panel hidden p-4 space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">문장 만들기 드릴</h2>
+          <p class="text-xs text-slate-500">단어 블록을 순서대로 조합하여 올바른 영문장을 완성하세요</p>
+        </div>
+
+        <!-- Sentence Puzzle Box -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-5">
+          <div class="flex items-center justify-between text-xs">
+            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 font-semibold rounded-lg">어순 트레이닝</span>
+            <span id="sentence-counter" class="text-slate-400">문항 1 / 5</span>
+          </div>
+
+          <!-- Target Korean Meaning -->
+          <div class="bg-slate-50 p-4 rounded-xl text-center border border-slate-100">
+            <span class="text-[11px] font-semibold text-slate-400">만들어야 할 문장</span>
+            <h3 id="target-sentence-kr" class="text-base font-bold text-slate-800 mt-1">
+              "제가 회의 일정을 변경할 수 있을까요?"
+            </h3>
+          </div>
+
+          <!-- Built Sentence Slot Area -->
+          <div class="space-y-1.5">
+            <div class="text-[11px] font-medium text-slate-500 flex justify-between">
+              <span>조합된 문장:</span>
+              <button onclick="resetCurrentSentenceSlot()" class="text-slate-400 hover:text-slate-600 text-[10px]">다시 비우기</button>
+            </div>
+            <div id="sentence-slot-area" class="min-h-[56px] p-2.5 bg-slate-100 rounded-xl border-2 border-dashed border-slate-300 flex flex-wrap gap-2 items-center">
+              <!-- Selected Word Chips dropped here -->
+              <span id="slot-placeholder" class="text-xs text-slate-400 w-full text-center">아래 단어를 탭하여 순서대로 넣으세요</span>
+            </div>
+          </div>
+
+          <!-- Available Word Bank -->
+          <div class="space-y-1.5 pt-2 border-t border-slate-100">
+            <div class="text-[11px] font-medium text-slate-500">단어 보관함 (클릭하여 선택):</div>
+            <div id="sentence-bank-area" class="flex flex-wrap gap-2 min-h-[50px] items-center">
+              <!-- Word chips -->
+            </div>
+          </div>
+
+          <!-- Action & Validation Buttons -->
+          <div class="pt-2 flex gap-2">
+            <button onclick="checkSentenceAnswer()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-500/20 active:scale-98 transition-all flex items-center justify-center gap-1.5">
+              <i data-lucide="check-circle" class="w-4 h-4"></i> 정답 확인하기
+            </button>
+            <button onclick="showSentenceHint()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold text-xs transition-colors" title="힌트">
+              💡 힌트
+            </button>
+          </div>
+
+          <!-- Answer Result Alert -->
+          <div id="sentence-feedback-box" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+        </div>
+
+        <button onclick="nextSentenceProblem()" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-semibold text-xs shadow transition-all">
+          다음 문장 도전하기
+        </button>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar (App Bar) -->
+    <nav class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 px-3 flex items-center justify-around z-20">
+      <button onclick="switchTab('vocab')" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-blue-600 transition-colors" data-tab="vocab">
+        <i data-lucide="book-open" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px] font-bold">단어장</span>
+      </button>
+
+      <button onclick="switchTab('shadowing')" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 transition-colors" data-tab="shadowing">
+        <i data-lucide="mic" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px] font-bold">쉐도잉</span>
+      </button>
+
+      <button onclick="switchTab('tutor')" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 transition-colors" data-tab="tutor">
+        <i data-lucide="message-square" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px] font-bold">AI 회화</span>
+      </button>
+
+      <button onclick="switchTab('sentence')" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 transition-colors" data-tab="sentence">
+        <i data-lucide="layers" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px] font-bold">문장 만들기</span>
+      </button>
+    </nav>
+
+    <!-- Settings / API Key Modal -->
+    <div id="settings-modal" class="hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl border border-slate-200 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-900">앱 설정 & AI 연동</h3>
+          <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 p-1">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">AI 모델 연동 (선택사항)</label>
+            <p class="text-[11px] text-slate-400 mb-2">API 키가 없어도 내장된 인텔리전트 AI 튜터 봇으로 자유롭게 대화할 수 있습니다.</p>
+            <select id="setting-ai-provider" class="w-full border border-slate-200 rounded-lg p-2 text-xs text-slate-700 mb-2">
+              <option value="built-in">내장 스마트 시뮬레이션 (API 키 불필요)</option>
+              <option value="gemini">Google Gemini API</option>
+              <option value="openai">OpenAI ChatGPT API</option>
+            </select>
+            <input type="password" id="setting-api-key" placeholder="API Key 입력 (선택)" class="w-full border border-slate-200 rounded-lg p-2 text-xs">
+          </div>
+
+          <div class="pt-2 border-t border-slate-100">
+            <label class="block font-semibold text-slate-700 mb-1">발음 음성 속도</label>
+            <div class="flex items-center gap-2">
+              <input type="range" id="setting-speech-rate" min="0.6" max="1.3" step="0.1" value="0.95" class="w-full">
+              <span id="speech-rate-val" class="font-mono text-slate-600">0.95x</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button onclick="saveSettings()" class="w-full py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs shadow hover:bg-blue-700">
+            저장 및 닫기
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // ==========================================
+    // 1. DATA REPOSITORY (단어, 쉐도잉, 퀴즈, 패턴)
+    // ==========================================
+    const vocabData = [
+      { id: 1, word: "Consistent", phonetic: "[kənˈsɪstənt]", category: "business", pos: "형용사", meaning: "일관된, 거듭되는", exEn: "She showed consistent improvement in English.", exKr: "그녀는 영어 실력에서 일관된 향상을 보였다." },
+      { id: 2, word: "Elaborate", phonetic: "[ɪˈlæbəreɪt]", category: "business", pos: "동사", meaning: "자세히 설명하다, 정교화하다", exEn: "Could you elaborate on that proposal?", exKr: "그 제안에 대해 자세히 설명해 주시겠어요?" },
+      { id: 3, word: "Affordable", phonetic: "[əˈfɔːrdəbl]", category: "daily", pos: "형용사", meaning: "가격이 알맞은, 감당할 수 있는", exEn: "We found a good hotel at an affordable price.", exKr: "우리는 알맞은 가격의 좋은 호텔을 찾았다." },
+      { id: 4, word: "Itinerary", phonetic: "[aɪˈtɪnəreri]", category: "travel", pos: "명사", meaning: "여행 일정표", exEn: "Let's review our flight itinerary for tomorrow.", exKr: "내일 비행기 여행 일정표를 검토해 보자." },
+      { id: 5, word: "Spontaneous", phonetic: "[spɑːnˈteɪniəs]", category: "daily", pos: "형용사", meaning: "자발적인, 즉흥적인", exEn: "We took a spontaneous weekend road trip.", exKr: "우리는 즉흥적으로 주말 드라이브 여행을 떠났다." },
+      { id: 6, word: "Perspective", phonetic: "[pərˈspektɪv]", category: "business", pos: "명사", meaning: "관점, 시각", exEn: "Try looking at the problem from a fresh perspective.", exKr: "새로운 관점에서 문제를 바라보세요." },
+      { id: 7, word: "Baggage claim", phonetic: "[ˈbæɡɪdʒ kleɪm]", category: "travel", pos: "명사", meaning: "수하물 찾는 곳", exEn: "Where is the baggage claim area for flight 204?", exKr: "204편 수하물 찾는 곳이 어디인가요?" },
+      { id: 8, word: "Appreciate", phonetic: "[əˈpriːʃieɪt]", category: "daily", pos: "동사", meaning: "고마워하다, 인정하다", exEn: "I really appreciate your kind help.", exKr: "도와주셔서 진심으로 감사드립니다." }
+    ];
+
+    const shadowingSentences = [
+      { id: 1, topic: "카페 주문", en: "Can I get an iced Americano with oat milk, please?", kr: "오트 밀크로 바꾼 아이스 아메리카노 한 잔 주시겠어요?" },
+      { id: 2, topic: "비즈니스 요청", en: "Could you please elaborate on that point in more detail?", kr: "그 부분에 대해 조금 더 자세히 설명해 주실 수 있나요?" },
+      { id: 3, topic: "공항 체크인", en: "I would like a window seat if there is one available.", kr: "가능하다면 창가 좌석으로 부탁드립니다." },
+      { id: 4, topic: "호텔 요청", en: "Could we have some extra towels sent up to our room?", kr: "저희 방으로 수건 몇 장 더 올려 보내주시겠어요?" },
+      { id: 5, topic: "의견 제안", en: "From my perspective, this solution might save us valuable time.", kr: "제 관점에서는, 이 해결책이 소중한 시간을 절약해 줄 것 같습니다." },
+      { id: 6, topic: "일상 대화", en: "It completely slipped my mind because I was in a rush.", kr: "너무 서두르느라 깜빡 잊어버렸어요." }
+    ];
+
+    const sentencePuzzles = [
+      {
+        id: 1,
+        kr: "제가 회의 일정을 변경할 수 있을까요?",
+        correct: ["Could", "I", "reschedule", "our", "meeting", "?"],
+        pool: ["Could", "I", "reschedule", "our", "meeting", "?", "Can", "cancel", "they", "schedule"]
+      },
+      {
+        id: 2,
+        kr: "여기서 가장 가까운 지하철역이 어디인가요?",
+        correct: ["Where", "is", "the", "nearest", "subway", "station", "?"],
+        pool: ["Where", "is", "the", "nearest", "subway", "station", "?", "Which", "bus", "far", "here"]
+      },
+      {
+        id: 3,
+        kr: "그것에 대해 너무 걱정하지 마세요.",
+        correct: ["Don't", "worry", "too", "much", "about", "it", "."],
+        pool: ["Don't", "worry", "too", "much", "about", "it", ".", "Never", "care", "very", "them"]
+      },
+      {
+        id: 4,
+        kr: "우리는 새로운 기회를 찾아야 합니다.",
+        correct: ["We", "need", "to", "look", "for", "new", "opportunities", "."],
+        pool: ["We", "need", "to", "look", "for", "new", "opportunities", ".", "should", "find", "a", "chance"]
+      }
+    ];
+
+    // ==========================================
+    // 2. STATE MANAGEMENT
+    // ==========================================
+    let currentTab = 'vocab';
+    let currentVocabIndex = 0;
+    let filteredVocabList = [...vocabData];
+    let isCardFlipped = false;
+    let quizScore = 0;
+    
+    let currentShadowIndex = 0;
+    let isRecording = false;
+    let recognition = null;
+    let recognizedTranscript = '';
+
+    let currentPuzzleIndex = 0;
+    let currentSlotWords = [];
+
+    let currentScenario = 'cafe';
+    let chatHistory = [];
+
+    let settings = {
+      aiProvider: 'built-in',
+      apiKey: '',
+      speechRate: 0.95
+    };
+
+    // ==========================================
+    // 3. INITIALIZATION
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initSpeechRecognition();
+      renderCurrentVocabCard();
+      renderCurrentShadowSentence();
+      renderCurrentPuzzle();
+      initScenarioChat(currentScenario);
+      
+      // Load stored settings if available
+      const saved = localStorage.getItem('linguaflow_settings');
+      if (saved) {
+        try {
+          settings = { ...settings, ...JSON.parse(saved) };
+          document.getElementById('setting-ai-provider').value = settings.aiProvider;
+          document.getElementById('setting-api-key').value = settings.apiKey;
+          document.getElementById('setting-speech-rate').value = settings.speechRate;
+          document.getElementById('speech-rate-val').innerText = settings.speechRate + 'x';
+        } catch (e) {}
+      }
+
+      document.getElementById('setting-speech-rate').addEventListener('input', (e) => {
+        document.getElementById('speech-rate-val').innerText = e.target.value + 'x';
+      });
+    });
+
+    // ==========================================
+    // 4. SPEECH SYNTHESIS & RECOGNITION (TTS / STT)
+    // ==========================================
+    function speakText(text, rate = null) {
+      if (!('speechSynthesis' in window)) {
+        alert("이 브라우저는 음성 합성을 지원하지 않습니다.");
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = rate || parseFloat(settings.speechRate) || 0.95;
+      
+      // Select natural US English voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
+      if (enVoice) utterance.voice = enVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.warn("Speech Recognition API not supported in this browser.");
+        return;
+      }
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        isRecording = true;
+        updateRecordingUI(true);
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        recognizedTranscript = transcript;
+        handleSpeechResult(transcript);
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech Recognition Error:", event.error);
+        stopRecording();
+        document.getElementById('record-status-text').innerText = "인식 오류가 발생했습니다. 다시 시도해주세요.";
+      };
+
+      recognition.onend = () => {
+        isRecording = false;
+        updateRecordingUI(false);
+      };
+    }
+
+    function updateRecordingUI(active) {
+      const ring = document.getElementById('mic-pulse-ring');
+      const micBtn = document.getElementById('btn-record-shadow');
+      const statusText = document.getElementById('record-status-text');
+      
+      if (active) {
+        ring.classList.remove('hidden');
+        micBtn.classList.replace('bg-rose-500', 'bg-red-600');
+        statusText.innerText = "듣고 있습니다... 말씀하세요!";
+        statusText.classList.add('text-rose-600', 'font-bold');
+      } else {
+        ring.classList.add('hidden');
+        micBtn.classList.replace('bg-red-600', 'bg-rose-500');
+        statusText.innerText = "버튼을 누르고 영어로 말하세요";
+        statusText.classList.remove('text-rose-600', 'font-bold');
+      }
+    }
+
+    // ==========================================
+    // 5. TAB SWITCHING
+    // ==========================================
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-item').forEach(el => {
+        if (el.dataset.tab === tabId) {
+          el.classList.add('text-blue-600');
+          el.classList.remove('text-slate-400');
+        } else {
+          el.classList.remove('text-blue-600');
+          el.classList.add('text-slate-400');
+        }
+      });
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // 6. VOCABULARY & FLASHCARDS LOGIC
+    // ==========================================
+    function setVocabMode(mode) {
+      const cardView = document.getElementById('vocab-card-view');
+      const quizView = document.getElementById('vocab-quiz-view');
+      const btnCard = document.getElementById('btn-mode-card');
+      const btnQuiz = document.getElementById('btn-mode-quiz');
+
+      if (mode === 'card') {
+        cardView.classList.remove('hidden');
+        quizView.classList.add('hidden');
+        btnCard.className = "px-3 py-1.5 rounded-md bg-white text-blue-600 shadow-sm font-semibold transition-all";
+        btnQuiz.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all";
+      } else {
+        cardView.classList.add('hidden');
+        quizView.classList.remove('hidden');
+        btnQuiz.className = "px-3 py-1.5 rounded-md bg-white text-blue-600 shadow-sm font-semibold transition-all";
+        btnCard.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all";
+        loadNextQuizQuestion();
+      }
+    }
+
+    function filterVocab(cat) {
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.dataset.cat === cat) {
+          btn.className = "cat-pill px-3 py-1.5 rounded-full bg-blue-600 text-white font-medium shadow-sm transition-colors whitespace-nowrap active";
+        } else {
+          btn.className = "cat-pill px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium hover:border-slate-300 transition-colors whitespace-nowrap";
+        }
+      });
+
+      if (cat === 'all') {
+        filteredVocabList = [...vocabData];
+      } else {
+        filteredVocabList = vocabData.filter(v => v.category === cat);
+      }
+      currentVocabIndex = 0;
+      renderCurrentVocabCard();
+    }
+
+    function renderCurrentVocabCard() {
+      const item = filteredVocabList[currentVocabIndex];
+      if (!item) return;
+
+      const cardInner = document.getElementById('flashcard-inner');
+      isCardFlipped = false;
+      cardInner.classList.remove('rotate-y-180');
+
+      document.getElementById('card-category').innerText = item.category;
+      document.getElementById('card-counter').innerText = `${currentVocabIndex + 1} / ${filteredVocabList.length}`;
+      document.getElementById('card-word').innerText = item.word;
+      document.getElementById('card-phonetic').innerText = item.phonetic;
+      document.getElementById('card-part-of-speech').innerText = item.pos;
+      document.getElementById('card-meaning').innerText = item.meaning;
+      document.getElementById('card-example-en').innerText = `"${item.exEn}"`;
+      document.getElementById('card-example-kr').innerText = item.exKr;
+      lucide.createIcons();
+    }
+
+    function flipCurrentCard() {
+      const cardInner = document.getElementById('flashcard-inner');
+      isCardFlipped = !isCardFlipped;
+      if (isCardFlipped) {
+        cardInner.classList.add('rotate-y-180');
+      } else {
+        cardInner.classList.remove('rotate-y-180');
+      }
+    }
+
+    function speakCurrentWord() {
+      const item = filteredVocabList[currentVocabIndex];
+      if (item) speakText(item.word);
+    }
+
+    function speakCurrentExample() {
+      const item = filteredVocabList[currentVocabIndex];
+      if (item) speakText(item.exEn);
+    }
+
+    function nextCard() {
+      if (currentVocabIndex < filteredVocabList.length - 1) {
+        currentVocabIndex++;
+      } else {
+        currentVocabIndex = 0;
+      }
+      renderCurrentVocabCard();
+    }
+
+    function prevCard() {
+      if (currentVocabIndex > 0) {
+        currentVocabIndex--;
+      } else {
+        currentVocabIndex = filteredVocabList.length - 1;
+      }
+      renderCurrentVocabCard();
+    }
+
+    function markCard(known) {
+      nextCard();
+    }
+
+    // Quiz Mode Logic
+    let currentQuizItem = null;
+    function loadNextQuizQuestion() {
+      const randIdx = Math.floor(Math.random() * vocabData.length);
+      currentQuizItem = vocabData[randIdx];
+      document.getElementById('quiz-question-word').innerText = currentQuizItem.word;
+
+      // 4 choices (1 correct, 3 distractors)
+      const distractors = vocabData.filter(v => v.id !== currentQuizItem.id);
+      distractors.sort(() => Math.random() - 0.5);
+      const choices = [currentQuizItem, ...distractors.slice(0, 3)];
+      choices.sort(() => Math.random() - 0.5);
+
+      const container = document.getElementById('quiz-options-container');
+      container.innerHTML = '';
+      choices.forEach(ch => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-3.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex justify-between items-center";
+        btn.innerHTML = `<span>${ch.meaning}</span> <i data-lucide="circle" class="w-4 h-4 text-slate-300"></i>`;
+        btn.onclick = () => selectQuizOption(btn, ch.id === currentQuizItem.id);
+        container.appendChild(btn);
+      });
+      lucide.createIcons();
+    }
+
+    function selectQuizOption(btn, isCorrect) {
+      const allBtns = document.getElementById('quiz-options-container').querySelectorAll('button');
+      allBtns.forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-xs font-bold text-emerald-800 flex justify-between items-center";
+        btn.querySelector('i').replaceWith(document.createElement('span'));
+        quizScore += 10;
+        document.getElementById('quiz-score').innerText = `Score: ${quizScore}`;
+        speakText("Correct!");
+      } else {
+        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-rose-500 bg-rose-50 text-xs font-bold text-rose-800 flex justify-between items-center";
+      }
+    }
+
+    // ==========================================
+    // 7. SHADOWING & PRONUNCIATION EVALUATION
+    // ==========================================
+    function renderCurrentShadowSentence() {
+      const item = shadowingSentences[currentShadowIndex];
+      document.getElementById('shadow-topic-badge').innerText = item.topic;
+      document.getElementById('shadow-counter').innerText = `문장 ${currentShadowIndex + 1} / ${shadowingSentences.length}`;
+      document.getElementById('shadow-target-en').innerText = `"${item.en}"`;
+      document.getElementById('shadow-target-kr').innerText = item.kr;
+      document.getElementById('shadow-result-box').classList.add('hidden');
+    }
+
+    function playShadowingAudio(rate) {
+      const item = shadowingSentences[currentShadowIndex];
+      speakText(item.en, rate);
+    }
+
+    function toggleShadowRecording() {
+      if (!recognition) {
+        // Fallback for browsers without Web Speech Recognition (like Firefox without flags)
+        const mockInput = prompt("마이크 지원이 제한된 환경입니다. 연습한 영어 문장을 입력해보세요:", shadowingSentences[currentShadowIndex].en);
+        if (mockInput) handleSpeechResult(mockInput);
+        return;
+      }
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch(e) {
+          recognition.stop();
+        }
+      }
+    }
+
+    function stopRecording() {
+      if (recognition && isRecording) recognition.stop();
+    }
+
+    function calculateLevenshteinSimilarity(s1, s2) {
+      const clean1 = s1.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+      const clean2 = s2.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+      if (clean1 === clean2) return 100;
+      
+      const words1 = clean1.split(/\s+/);
+      const words2 = clean2.split(/\s+/);
+      let matchCount = 0;
+      words2.forEach(w => {
+        if (words1.includes(w)) matchCount++;
+      });
+      const ratio = Math.min(100, Math.round((matchCount / Math.max(words1.length, words2.length)) * 100));
+      return Math.max(20, ratio);
+    }
+
+    function handleSpeechResult(spokenText) {
+      const target = shadowingSentences[currentShadowIndex].en;
+      const score = calculateLevenshteinSimilarity(target, spokenText);
+
+      const resultBox = document.getElementById('shadow-result-box');
+      const recognizedEl = document.getElementById('shadow-recognized-text');
+      const scoreEl = document.getElementById('shadow-accuracy-score');
+      const feedbackEl = document.getElementById('shadow-feedback-text');
+
+      resultBox.classList.remove('hidden');
+      recognizedEl.innerText = `"${spokenText}"`;
+      scoreEl.innerText = `일치도: ${score}%`;
+
+      if (score >= 80) {
+        scoreEl.className = "text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-md";
+        feedbackEl.innerHTML = "<span class='text-emerald-700 font-semibold'>🎉 훌륭합니다! 원어민 발음과 억양이 매우 흡사합니다.</span>";
+      } else if (score >= 50) {
+        scoreEl.className = "text-xs font-extrabold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-md";
+        feedbackEl.innerHTML = "<span class='text-amber-700 font-semibold'>👍 좋습니다! 0.8배속으로 다시 듣고 단어 끝소리에 집중해보세요.</span>";
+      } else {
+        scoreEl.className = "text-xs font-extrabold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-md";
+        feedbackEl.innerHTML = "<span class='text-rose-700 font-semibold'>💪 괜찮아요! 원어민 소리를 2~3번 듣고 다시 시도해보세요.</span>";
+      }
+    }
+
+    function nextShadowSentence() {
+      if (currentShadowIndex < shadowingSentences.length - 1) currentShadowIndex++;
+      else currentShadowIndex = 0;
+      renderCurrentShadowSentence();
+    }
+
+    function prevShadowSentence() {
+      if (currentShadowIndex > 0) currentShadowIndex--;
+      else currentShadowIndex = shadowingSentences.length - 1;
+      renderCurrentShadowSentence();
+    }
+
+    // ==========================================
+    // 8. AI CONVERSATION TUTOR (CHLOE)
+    // ==========================================
+    const scenarioPresets = {
+      cafe: {
+        title: "카페에서 주문하기",
+        initialAi: "Hi there! Welcome to Coffee Central. What can I get started for you today?",
+        tips: "💡 팁: 'Can I get a ~ ?' 나 'I'd like a ~' 표현을 사용해보세요."
+      },
+      airport: {
+        title: "공항 입국 심사",
+        initialAi: "Good morning. May I see your passport and boarding pass, please? What is the purpose of your visit?",
+        tips: "💡 팁: 'I'm here for vacation/business' 또는 'I plan to stay for 5 days'라고 답해보세요."
+      },
+      interview: {
+        title: "영어 면접 연습",
+        initialAi: "Thank you for joining our interview today. To start off, could you briefly introduce yourself and your background?",
+        tips: "💡 팁: 자신의 경력과 강점을 2~3문장으로 간결하게 요약해보세요."
+      },
+      free: {
+        title: "일상 자유 대화",
+        initialAi: "Hey! How has your day been going so far? Tell me anything you feel like chatting about!",
+        tips: "💡 팁: 오늘 있었던 일이나 관심사에 대해 편하게 이야기해보세요."
+      }
+    };
+
+    function initScenarioChat(scenKey) {
+      currentScenario = scenKey;
+      chatHistory = [];
+      const preset = scenarioPresets[scenKey];
+      appendChatMessage('ai', preset.initialAi);
+      speakText(preset.initialAi);
+    }
+
+    function changeScenario(val) {
+      initScenarioChat(val);
+    }
+
+    function resetConversation() {
+      initScenarioChat(currentScenario);
+    }
+
+    function appendChatMessage(role, text) {
+      const container = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      
+      if (role === 'ai') {
+        msgDiv.className = "flex items-start gap-2 max-w-[88%]";
+        msgDiv.innerHTML = `
+          <div class="w-7 h-7 rounded-full bg-indigo-600 text-white flex-shrink-0 flex items-center justify-center text-[10px] font-bold shadow-xs">AI</div>
+          <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-xs p-3 shadow-xs space-y-1.5">
+            <p class="text-xs text-slate-800 leading-relaxed">${text}</p>
+            <div class="flex items-center gap-2">
+              <button onclick="speakText(this.dataset.msg)" data-msg="${text.replace(/"/g, '&quot;')}" class="text-[11px] text-blue-600 hover:text-blue-700 flex items-center gap-1 font-semibold">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> 듣기
+              </button>
+            </div>
+          </div>
+        `;
+      } else {
+        msgDiv.className = "flex items-end justify-end gap-2 ml-auto max-w-[88%]";
+        msgDiv.innerHTML = `
+          <div class="bg-blue-600 text-white rounded-2xl rounded-tr-xs p-3 shadow-xs">
+            <p class="text-xs leading-relaxed">${text}</p>
+          </div>
+        `;
+      }
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+      chatHistory.push({ role, text });
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chat-input-text');
+      const userText = input.value.trim();
+      if (!userText) return;
+
+      appendChatMessage('user', userText);
+      input.value = '';
+
+      // AI Response Simulation / API call
+      showTypingIndicator();
+      
+      try {
+        const response = await generateTutorResponse(userText, currentScenario);
+        removeTypingIndicator();
+        appendChatMessage('ai', response.reply);
+        speakText(response.reply);
+
+        if (response.feedback) {
+          const feedbackCard = document.getElementById('tutor-feedback-card');
+          const feedbackContent = document.getElementById('tutor-feedback-content');
+          feedbackContent.innerHTML = response.feedback;
+          feedbackCard.classList.remove('hidden');
+          lucide.createIcons();
+        }
+      } catch (err) {
+        removeTypingIndicator();
+        appendChatMessage('ai', "I heard you! That was great practice. Keep going!");
+      }
+    }
+
+    function showTypingIndicator() {
+      const container = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.id = "typing-indicator";
+      div.className = "flex items-center gap-2 max-w-[80%]";
+      div.innerHTML = `
+        <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex-shrink-0 flex items-center justify-center text-[10px] font-bold">AI</div>
+        <div class="bg-slate-200/60 rounded-2xl p-2.5 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+          <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-100"></span>
+          <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-200"></span>
+        </div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const el = document.getElementById('typing-indicator');
+      if (el) el.remove();
+    }
+
+    // Smart Local AI Dialog Engine + Optional Gemini / OpenAI API integration
+    async function generateTutorResponse(userInput, scenario) {
+      if (settings.apiKey && settings.aiProvider === 'gemini') {
+        return callGeminiAPI(userInput, scenario);
+      } else if (settings.apiKey && settings.aiProvider === 'openai') {
+        return callOpenAIAPI(userInput, scenario);
+      }
+      
+      // Built-in intelligent simulation
+      await new Promise(r => setTimeout(r, 800));
+      const lower = userInput.toLowerCase();
+      
+      if (scenario === 'cafe') {
+        if (lower.includes('iced') || lower.includes('latte') || lower.includes('americano') || lower.includes('coffee')) {
+          return {
+            reply: "Sure thing! What size would you prefer: Small, Medium, or Large? And do you have any dietary preferences for milk?",
+            feedback: "💡 <b>칭찬:</b> 음료 메뉴를 정확히 전달하셨어요! <br>더 자연스러운 표현: <i>'Could I get a medium iced latte with oat milk, please?'</i>"
+          };
+        } else if (lower.includes('size') || lower.includes('medium') || lower.includes('large') || lower.includes('small')) {
+          return {
+            reply: "Got it! Would you like that for here or to go? We also have fresh blueberry scones today if you'd like a pastry.",
+            feedback: "💡 <b>원어민 팁:</b> 카페에서는 'For here, please' (매장 식사) 또는 'To go, please' (포장)으로 간단히 답할 수 있습니다."
+          };
+        } else {
+          return {
+            reply: "Sounds wonderful. Your total is $4.50. Will you be paying with cash or card today?",
+            feedback: "💡 <b>표현 제안:</b> 'I'll pay by credit card' 또는 'Just tap to pay'라고 표현해보세요."
+          };
+        }
+      } else if (scenario === 'airport') {
+        if (lower.includes('vacation') || lower.includes('travel') || lower.includes('sightseeing')) {
+          return {
+            reply: "Wonderful! How long do you plan to stay in the country, and where will you be staying?",
+            feedback: "💡 <b>칭찬:</b> 입국 목적을 깔끔하게 밝히셨습니다! <br>답변 예시: <i>'I'm staying at the Grand Hotel for one week.'</i>"
+          };
+        } else {
+          return {
+            reply: "Everything looks in order. Enjoy your stay and have a wonderful time!",
+            feedback: "💡 <b>심사 통과:</b> 'Thank you very much, have a nice day!' 라고 답하며 여권을 받으시면 됩니다."
+          };
+        }
+      } else {
+        return {
+          reply: `That's very interesting! Could you tell me more about how you usually practice English in your free time?`,
+          feedback: `💡 <b>표현 팁:</b> 'I usually practice by ~ing' 패턴으로 취미나 습관을 표현해보세요.`
+        };
+      }
+    }
+
+    async function callGeminiAPI(userInput, scenario) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${settings.apiKey}`;
+      const systemPrompt = `You are Chloe, a friendly native English tutor. The scenario is: ${scenario}. Keep replies under 2-3 sentences. Then provide a Korean feedback tip labeled as [FEEDBACK: ...] evaluating the user's sentence.`;
+      
+      const payload = {
+        contents: [
+          { role: 'user', parts: [{ text: `${systemPrompt}\nUser said: "${userInput}"` }] }
+        ]
+      };
+      
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "That's great! Let's continue.";
+      
+      const match = text.match(/\[FEEDBACK:\s*([\s\S]*?)\]/);
+      const cleanReply = text.replace(/\[FEEDBACK:[\s\S]*?\]/, '').trim();
+      return {
+        reply: cleanReply,
+        feedback: match ? match[1] : null
+      };
+    }
+
+    async function callOpenAIAPI(userInput, scenario) {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${settings.apiKey}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: `You are Chloe, an English tutor. Scenario: ${scenario}. Reply in natural English (max 2 sentences). Then provide [FEEDBACK: Korean tip].` },
+            { role: 'user', content: userInput }
+          ]
+        })
+      });
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content || "Awesome! Let's keep going.";
+      const match = text.match(/\[FEEDBACK:\s*([\s\S]*?)\]/);
+      const cleanReply = text.replace(/\[FEEDBACK:[\s\S]*?\]/, '').trim();
+      return {
+        reply: cleanReply,
+        feedback: match ? match[1] : null
+      };
+    }
+
+    function toggleChatVoiceInput() {
+      if (!recognition) {
+        alert("이 브라우저는 음성 입력을 지원하지 않습니다. 텍스트로 입력해주세요.");
+        return;
+      }
+      recognition.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        document.getElementById('chat-input-text').value = text;
+        sendChatMessage();
+      };
+      recognition.start();
+    }
+
+    // ==========================================
+    // 9. SENTENCE BUILDER & UNSCRAMBLE DRILL
+    // ==========================================
+    function renderCurrentPuzzle() {
+      const puzzle = sentencePuzzles[currentPuzzleIndex];
+      document.getElementById('sentence-counter').innerText = `문항 ${currentPuzzleIndex + 1} / ${sentencePuzzles.length}`;
+      document.getElementById('target-sentence-kr').innerText = `"${puzzle.kr}"`;
+      document.getElementById('sentence-feedback-box').classList.add('hidden');
+
+      currentSlotWords = [];
+      updateSlotDisplay();
+
+      // Scramble words
+      const shuffled = [...puzzle.pool].sort(() => Math.random() - 0.5);
+      const bank = document.getElementById('sentence-bank-area');
+      bank.innerHTML = '';
+      
+      shuffled.forEach((word, idx) => {
+        const chip = document.createElement('button');
+        chip.className = "px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-xs hover:border-blue-500 hover:text-blue-600 active:scale-95 transition-all";
+        chip.innerText = word;
+        chip.dataset.wordId = `${word}-${idx}`;
+        chip.onclick = () => selectBankWord(word, chip);
+        bank.appendChild(chip);
+      });
+    }
+
+    function selectBankWord(word, chipEl) {
+      currentSlotWords.push({ word, chipEl });
+      chipEl.classList.add('opacity-30', 'pointer-events-none');
+      updateSlotDisplay();
+    }
+
+    function removeSlotWord(index) {
+      const removed = currentSlotWords.splice(index, 1)[0];
+      if (removed && removed.chipEl) {
+        removed.chipEl.classList.remove('opacity-30', 'pointer-events-none');
+      }
+      updateSlotDisplay();
+    }
+
+    function resetCurrentSentenceSlot() {
+      currentSlotWords.forEach(item => {
+        if (item.chipEl) item.chipEl.classList.remove('opacity-30', 'pointer-events-none');
+      });
+      currentSlotWords = [];
+      updateSlotDisplay();
+    }
+
+    function updateSlotDisplay() {
+      const slotArea = document.getElementById('sentence-slot-area');
+      slotArea.innerHTML = '';
+
+      if (currentSlotWords.length === 0) {
+        slotArea.innerHTML = '<span id="slot-placeholder" class="text-xs text-slate-400 w-full text-center">아래 단어를 탭하여 순서대로 넣으세요</span>';
+        return;
+      }
+
+      currentSlotWords.forEach((item, idx) => {
+        const chip = document.createElement('button');
+        chip.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold shadow-xs flex items-center gap-1 hover:bg-rose-500 transition-colors";
+        chip.innerHTML = `${item.word} <i data-lucide="x" class="w-3 h-3"></i>`;
+        chip.onclick = () => removeSlotWord(idx);
+        slotArea.appendChild(chip);
+      });
+      lucide.createIcons();
+    }
+
+    function checkSentenceAnswer() {
+      const puzzle = sentencePuzzles[currentPuzzleIndex];
+      const userJoined = currentSlotWords.map(w => w.word).join(' ');
+      const correctJoined = puzzle.correct.join(' ');
+      
+      const box = document.getElementById('sentence-feedback-box');
+      box.classList.remove('hidden');
+
+      if (userJoined.replace(/\s+\?/g, '?').replace(/\s+\./g, '.') === correctJoined.replace(/\s+\?/g, '?').replace(/\s+\./g, '.')) {
+        box.className = "p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center justify-between";
+        box.innerHTML = `
+          <span>🎉 정답입니다! 완벽한 문장이에요.</span>
+          <button onclick="speakText('${correctJoined}')" class="text-emerald-700 underline font-bold flex items-center gap-1">
+            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> 듣기
+          </button>
+        `;
+        speakText(correctJoined);
+      } else {
+        box.className = "p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
+        box.innerHTML = `❌ 아쉬워요! 단어 순서를 다시 확인해보세요.`;
+      }
+      lucide.createIcons();
+    }
+
+    function showSentenceHint() {
+      const puzzle = sentencePuzzles[currentPuzzleIndex];
+      const box = document.getElementById('sentence-feedback-box');
+      box.classList.remove('hidden');
+      box.className = "p-3 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200";
+      box.innerHTML = `💡 첫 번째 단어는 <b>"${puzzle.correct[0]}"</b> 입니다!`;
+    }
+
+    function nextSentenceProblem() {
+      if (currentPuzzleIndex < sentencePuzzles.length - 1) currentPuzzleIndex++;
+      else currentPuzzleIndex = 0;
+      renderCurrentPuzzle();
+    }
+
+    // ==========================================
+    // 10. MODAL & SETTINGS
+    // ==========================================
+    function openSettingsModal() {
+      document.getElementById('settings-modal').classList.remove('hidden');
+    }
+    function closeSettingsModal() {
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+    function saveSettings() {
+      settings.aiProvider = document.getElementById('setting-ai-provider').value;
+      settings.apiKey = document.getElementById('setting-api-key').value.trim();
+      settings.speechRate = parseFloat(document.getElementById('setting-speech-rate').value);
+      localStorage.setItem('linguaflow_settings', JSON.stringify(settings));
+      closeSettingsModal();
+    }
+  </script>
+</body>
+</html>
