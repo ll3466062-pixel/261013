@@ -1,1287 +1,1789 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LinguaFlow - 올인원 영어 학습</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts (Pretendard, Inter) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WINNER CUT AI - 공모전 대상 올킬 숏폼 제작 스튜디오</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-  
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', '"Noto Sans KR"', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-            },
-            accent: {
-              500: '#10b981',
-              600: '#059669',
-            }
-          }
-        }
-      }
-    }
-  </script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&family=Cabinet+Grotesk:wght@800;900&display=swap" rel="stylesheet">
   <style>
-    /* 3D Card Flip styles */
-    .perspective-1000 {
-      perspective: 1000px;
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background-color: #0B0E14;
+      color: #F3F4F6;
+      overflow-x: hidden;
     }
-    .transform-style-3d {
-      transform-style: preserve-3d;
+    .font-brand {
+      font-family: 'Cabinet Grotesk', 'Pretendard', sans-serif;
     }
-    .backface-hidden {
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-    .rotate-y-180 {
-      transform: rotateY(180deg);
-    }
-    
-    /* Scrollbar Styling */
+    /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #f1f5f9;
+      background: #111827;
     }
     ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
+      background: #374151;
+      border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+      background: #4B5563;
     }
-
-    /* Pulse animation for microphone */
-    @keyframes pulse-ring {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.15); opacity: 0.4; }
-      100% { transform: scale(0.95); opacity: 0.8; }
+    /* Glow effects */
+    .glow-gold {
+      box-shadow: 0 0 25px -5px rgba(234, 179, 8, 0.35);
     }
-    .recording-pulse {
-      animation: pulse-ring 1.5s infinite ease-in-out;
+    .glow-purple {
+      box-shadow: 0 0 25px -5px rgba(168, 85, 247, 0.35);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.35);
+    }
+    .gradient-border {
+      background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+    }
+    /* Pulse animations */
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.03); }
+    }
+    .animate-pulse-glow {
+      animation: pulseGlow 3s ease-in-out infinite;
+    }
+    /* Audio visualizer bar */
+    @keyframes waveBar {
+      0%, 100% { height: 15%; }
+      50% { height: 95%; }
     }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 flex justify-center items-center selection:bg-blue-100 selection:text-blue-700">
+<body class="min-h-screen bg-[#0B0E14] text-slate-100 flex flex-col antialiased selection:bg-amber-500 selection:text-black">
 
-  <!-- Mobile App Frame Container (Desktop에서는 폰 프레임, 모바일에서는 풀스크린) -->
-  <div id="app-frame" class="w-full max-w-md h-screen max-h-[920px] bg-white flex flex-col shadow-2xl overflow-hidden sm:rounded-3xl border border-slate-200 relative">
+  <!-- Top Announcement Bar -->
+  <header class="border-b border-white/10 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-amber-500/20 font-brand font-black text-xl text-black">
+          W
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-black text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-rose-300 to-cyan-400 font-brand">WINNER CUT AI</span>
+            <span class="px-2 py-0.5 text-[11px] font-bold tracking-wider uppercase bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-full flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+              공모전 대상 올킬 스튜디오
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">초반 3초 후킹 • 말맛 극대화 한국어 대본 • 심사위원단 모의 채점 • 9:16 렌더링</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Preset Dropdown -->
+        <div class="relative">
+          <select id="presetSelect" class="bg-slate-900 border border-white/15 text-slate-200 text-xs rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-amber-400 transition cursor-pointer">
+            <option value="">🏆 [실제 수상작 프리셋 불러오기]</option>
+            <option value="preset-1">🏛️ 환경부 ESG 대상작 : 45초의 부재중 전화</option>
+            <option value="preset-2">💼 청년고용 공모전 대상 : 자정 12시 편의점의 눈물</option>
+            <option value="preset-3">🔥 브랜드 바이럴 1등작 : 잔고 380원의 기적</option>
+            <option value="preset-4">🚨 교통안전 공모전 대상 : 폰을 본 2초, 그 사이</option>
+            <option value="preset-5">🌿 지역관광 공모전 대상 : 시골의 밤이 충격적인 이유</option>
+          </select>
+        </div>
+
+        <button id="btnQuickPolish" class="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs rounded-lg shadow-md shadow-amber-500/20 flex items-center gap-1.5 transition active:scale-95">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"/></svg>
+          원클릭 대상 튜닝
+        </button>
+
+        <button id="btnExportVideo" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-lg shadow-md shadow-rose-600/20 flex items-center gap-1.5 transition active:scale-95">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          9:16 비디오 내보내기
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
     
-    <!-- Top Header Bar -->
-    <header class="px-5 py-3.5 bg-white border-b border-slate-100 flex items-center justify-between z-10">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-          <i data-lucide="sparkles" class="w-5 h-5"></i>
+    <!-- Top Winning Metrics Banner -->
+    <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/90 border border-white/10 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-2xl">
+          🎯
         </div>
         <div>
-          <h1 class="text-base font-bold tracking-tight text-slate-900 leading-none">LinguaFlow</h1>
-          <span id="streak-badge" class="text-xs font-semibold text-amber-600 flex items-center gap-1 mt-0.5">
-            <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i>
-            <span>3일 연속 학습 중</span>
-          </span>
+          <h1 class="text-sm font-bold text-white flex items-center gap-2">
+            공모전 수상 5대 황금 법칙 알고리즘 가동 중
+            <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">심사 기준 100% 매칭</span>
+          </h1>
+          <p class="text-xs text-slate-400 mt-0.5">
+            1. 초반 3초 후킹(이탈률 0%) • 2. 인위적인 AI 말투 박멸(자연스러운 구어체) • 3. 컷당 1.8초 템포 • 4. 2030 공감 서사 • 5. 주최측 핵심 메시지 각인
+          </p>
         </div>
       </div>
-
-      <div class="flex items-center gap-2">
-        <button id="btn-api-modal" onclick="openSettingsModal()" class="p-2 text-slate-500 hover:text-slate-800 rounded-full hover:bg-slate-100 transition-colors" title="AI 설정">
-          <i data-lucide="settings" class="w-5 h-5"></i>
-        </button>
-        <button id="btn-sound-test" onclick="speakText('Welcome to LinguaFlow!')" class="p-2 text-slate-500 hover:text-blue-600 rounded-full hover:bg-slate-100 transition-colors" title="음성 테스트">
-          <i data-lucide="volume-2" class="w-5 h-5"></i>
-        </button>
-      </div>
-    </header>
-
-    <!-- Main Content Area (Dynamic Tabs) -->
-    <main id="main-content" class="flex-1 overflow-y-auto pb-20 relative bg-slate-50/50">
-      
-      <!-- ============================================== -->
-      <!-- TAB 1: 단어장 & 플래시카드 (Vocab & Flashcards) -->
-      <!-- ============================================== -->
-      <section id="tab-vocab" class="tab-panel p-4 space-y-4">
-        <!-- Sub Header & Mode Toggle -->
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-lg font-bold text-slate-900">단어장 & 퀴즈</h2>
-            <p class="text-xs text-slate-500">카드를 뒤집어 외우고 퀴즈로 확인하세요</p>
+      <div class="flex items-center gap-6">
+        <div class="text-right">
+          <div class="text-xs text-slate-400">실시간 수상 예상 등급</div>
+          <div id="topAwardBadge" class="text-lg font-black text-amber-400 flex items-center gap-1 justify-end">
+            <span>🏆 대상 (Grand Prize)</span>
+            <span class="text-xs bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">98.5점</span>
           </div>
-          <div class="flex bg-slate-200/80 p-0.5 rounded-lg text-xs font-medium">
-            <button id="btn-mode-card" onclick="setVocabMode('card')" class="px-3 py-1.5 rounded-md bg-white text-blue-600 shadow-sm font-semibold transition-all">플래시카드</button>
-            <button id="btn-mode-quiz" onclick="setVocabMode('quiz')" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all">단어 퀴즈</button>
-          </div>
-        </div>
-
-        <!-- Category Pills -->
-        <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
-          <button onclick="filterVocab('all')" class="cat-pill px-3 py-1.5 rounded-full bg-blue-600 text-white font-medium shadow-sm transition-colors whitespace-nowrap active" data-cat="all">전체</button>
-          <button onclick="filterVocab('daily')" class="cat-pill px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium hover:border-slate-300 transition-colors whitespace-nowrap" data-cat="daily">일상 생활</button>
-          <button onclick="filterVocab('business')" class="cat-pill px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium hover:border-slate-300 transition-colors whitespace-nowrap" data-cat="business">비즈니스</button>
-          <button onclick="filterVocab('travel')" class="cat-pill px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium hover:border-slate-300 transition-colors whitespace-nowrap" data-cat="travel">여행</button>
-        </div>
-
-        <!-- Card Mode View -->
-        <div id="vocab-card-view" class="space-y-4">
-          <!-- 3D Flashcard -->
-          <div class="perspective-1000 w-full h-64 cursor-pointer" onclick="flipCurrentCard()">
-            <div id="flashcard-inner" class="relative w-full h-full duration-500 transform-style-3d shadow-lg rounded-2xl border border-slate-200/80">
-              
-              <!-- Front Side (English) -->
-              <div class="absolute w-full h-full backface-hidden rounded-2xl bg-gradient-to-br from-white to-slate-50 p-6 flex flex-col justify-between border-t-4 border-blue-500">
-                <div class="flex justify-between items-center text-xs text-slate-400">
-                  <span id="card-category" class="font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Category</span>
-                  <span id="card-counter">1 / 10</span>
-                </div>
-                <div class="text-center py-4">
-                  <h3 id="card-word" class="text-3xl font-extrabold text-slate-900 tracking-tight">Consistent</h3>
-                  <p id="card-phonetic" class="text-sm text-slate-400 mt-1">[kənˈsɪstənt]</p>
-                  <p class="text-xs text-slate-400 mt-4 flex items-center justify-center gap-1">
-                    <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> 클릭하여 한글 뜻 확인
-                  </p>
-                </div>
-                <div class="flex justify-center">
-                  <button onclick="event.stopPropagation(); speakCurrentWord();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-semibold transition-colors">
-                    <i data-lucide="volume-2" class="w-4 h-4"></i> 발음 듣기
-                  </button>
-                </div>
-              </div>
-
-              <!-- Back Side (Korean & Example) -->
-              <div class="absolute w-full h-full backface-hidden rotate-y-180 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-6 flex flex-col justify-between">
-                <div class="flex justify-between items-center text-xs text-blue-200">
-                  <span id="card-part-of-speech" class="bg-blue-800/60 px-2 py-0.5 rounded font-mono">형용사</span>
-                  <span>클릭하여 앞면으로</span>
-                </div>
-                <div class="text-center py-2">
-                  <h3 id="card-meaning" class="text-2xl font-bold tracking-tight mb-2">일관된, 거듭되는</h3>
-                  <div class="bg-white/10 rounded-xl p-3 text-left border border-white/15">
-                    <p id="card-example-en" class="text-xs font-medium text-blue-50">"He was consistent in his daily exercise."</p>
-                    <p id="card-example-kr" class="text-[11px] text-blue-200 mt-1">그는 매일 일관되게 운동을 했다.</p>
-                  </div>
-                </div>
-                <div class="flex justify-center">
-                  <button onclick="event.stopPropagation(); speakCurrentExample();" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 text-white hover:bg-white/30 text-xs font-medium transition-colors">
-                    <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> 예문 듣기
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Controls: Prev, Next, Know / Review -->
-          <div class="flex items-center justify-between gap-3 pt-2">
-            <button onclick="prevCard()" class="p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm active:scale-95 transition-transform">
-              <i data-lucide="chevron-left" class="w-5 h-5"></i>
-            </button>
-            <div class="flex-1 flex gap-2">
-              <button onclick="markCard(false)" class="flex-1 py-3 rounded-xl bg-rose-50 text-rose-600 font-semibold text-xs border border-rose-200 hover:bg-rose-100 active:scale-98 transition-all flex items-center justify-center gap-1.5">
-                <i data-lucide="x" class="w-4 h-4"></i> 아직 헷갈려요
-              </button>
-              <button onclick="markCard(true)" class="flex-1 py-3 rounded-xl bg-emerald-50 text-emerald-600 font-semibold text-xs border border-emerald-200 hover:bg-emerald-100 active:scale-98 transition-all flex items-center justify-center gap-1.5">
-                <i data-lucide="check" class="w-4 h-4"></i> 다 외웠어요
-              </button>
-            </div>
-            <button onclick="nextCard()" class="p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm active:scale-95 transition-transform">
-              <i data-lucide="chevron-right" class="w-5 h-5"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Quiz Mode View (Hidden by default) -->
-        <div id="vocab-quiz-view" class="hidden space-y-4">
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <div class="flex justify-between items-center text-xs text-slate-500">
-              <span class="font-bold text-blue-600">QUIZ</span>
-              <span id="quiz-score">Score: 0</span>
-            </div>
-            <div class="text-center py-4">
-              <span class="text-xs text-slate-400">다음 단어의 올바른 뜻을 고르세요</span>
-              <h3 id="quiz-question-word" class="text-2xl font-black text-slate-800 mt-1">Eloquent</h3>
-              <button onclick="speakText(document.getElementById('quiz-question-word').innerText)" class="mt-2 text-xs text-blue-600 flex items-center gap-1 mx-auto hover:underline">
-                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> 발음 듣기
-              </button>
-            </div>
-            <div id="quiz-options-container" class="space-y-2">
-              <!-- Rendered via JS -->
-            </div>
-          </div>
-          <button onclick="loadNextQuizQuestion()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/20 active:scale-98 transition-transform">
-            다음 문제로 넘어가기
-          </button>
-        </div>
-      </section>
-
-      <!-- ============================================== -->
-      <!-- TAB 2: 쉐도잉 & 리스닝 (Shadowing & Listening) -->
-      <!-- ============================================== -->
-      <section id="tab-shadowing" class="tab-panel hidden p-4 space-y-4">
-        <div>
-          <h2 class="text-lg font-bold text-slate-900">쉐도잉 & 발음 평가</h2>
-          <p class="text-xs text-slate-500">원어민 발음을 듣고 똑같이 따라 말해보세요</p>
-        </div>
-
-        <!-- Sentence Card -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
-          <div class="flex items-center justify-between text-xs">
-            <span id="shadow-topic-badge" class="px-2.5 py-1 bg-indigo-50 text-indigo-600 font-semibold rounded-lg">일상 회화</span>
-            <span id="shadow-counter" class="text-slate-400">문장 1 / 8</span>
-          </div>
-
-          <div class="text-center py-4 space-y-2">
-            <p id="shadow-target-en" class="text-xl font-bold text-slate-800 leading-snug">
-              "Could you please elaborate on that point?"
-            </p>
-            <p id="shadow-target-kr" class="text-xs text-slate-500 font-medium">
-              그 점에 대해 조금 더 자세히 설명해 주시겠어요?
-            </p>
-          </div>
-
-          <!-- Listening Controls (Speed, Replay) -->
-          <div class="flex items-center justify-center gap-3 pt-2 border-t border-slate-100">
-            <button onclick="playShadowingAudio(0.8)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium flex items-center gap-1.5 transition-colors">
-              <i data-lucide="turtle" class="w-3.5 h-3.5"></i> 0.8x 느리게
-            </button>
-            <button onclick="playShadowingAudio(1.0)" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 flex items-center gap-1.5 active:scale-95 transition-all">
-              <i data-lucide="volume-2" class="w-4 h-4"></i> 원어민 발음 듣기
-            </button>
-          </div>
-        </div>
-
-        <!-- Voice Recording & Shadowing Practice Box -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm text-center space-y-4">
-          <p class="text-xs font-semibold text-slate-500">내 발음 녹음하고 채점받기</p>
-
-          <!-- Mic Record Button -->
-          <div class="relative inline-block my-2">
-            <div id="mic-pulse-ring" class="hidden absolute inset-0 rounded-full bg-red-400/30 recording-pulse scale-125"></div>
-            <button id="btn-record-shadow" onclick="toggleShadowRecording()" class="relative z-10 w-20 h-20 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 hover:bg-rose-600 active:scale-95 transition-transform">
-              <i id="mic-icon" data-lucide="mic" class="w-8 h-8"></i>
-            </button>
-          </div>
-          
-          <p id="record-status-text" class="text-xs text-slate-400">버튼을 누르고 영어로 말하세요</p>
-
-          <!-- Recognized Speech Result & Accuracy -->
-          <div id="shadow-result-box" class="hidden bg-slate-50 rounded-xl p-4 border border-slate-200 text-left space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-600">인식된 발음:</span>
-              <span id="shadow-accuracy-score" class="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">일치도: 92%</span>
-            </div>
-            <p id="shadow-recognized-text" class="text-sm text-slate-800 font-medium italic"></p>
-            <div id="shadow-feedback-text" class="text-xs text-slate-500 pt-1 border-t border-slate-200/60"></div>
-          </div>
-        </div>
-
-        <!-- Navigation Buttons -->
-        <div class="flex justify-between items-center">
-          <button onclick="prevShadowSentence()" class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 shadow-sm flex items-center gap-1">
-            <i data-lucide="chevron-left" class="w-4 h-4"></i> 이전 문장
-          </button>
-          <button onclick="nextShadowSentence()" class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 shadow-sm flex items-center gap-1">
-            다음 문장 <i data-lucide="chevron-right" class="w-4 h-4"></i>
-          </button>
-        </div>
-      </section>
-
-      <!-- ============================================== -->
-      <!-- TAB 3: AI 회화 튜터 (AI Conversation Tutor)   -->
-      <!-- ============================================== -->
-      <section id="tab-tutor" class="tab-panel hidden flex flex-col h-full p-4 space-y-3">
-        <!-- Tutor Top Bar -->
-        <div class="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center gap-2.5">
-            <div class="relative">
-              <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                AI
-              </div>
-              <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
-            </div>
-            <div>
-              <div class="flex items-center gap-1">
-                <h2 class="text-xs font-bold text-slate-900">클로이 튜터 (Chloe)</h2>
-                <span class="text-[10px] text-blue-600 font-medium bg-blue-50 px-1.5 py-0.2 rounded">원어민 코치</span>
-              </div>
-              <!-- Scenario Selector Dropdown -->
-              <select id="scenario-selector" onchange="changeScenario(this.value)" class="text-[11px] font-medium text-slate-600 bg-slate-100 rounded px-2 py-0.5 mt-0.5 border-none outline-none cursor-pointer">
-                <option value="cafe">☕ 카페에서 주문하기</option>
-                <option value="airport">✈️ 공항 입국 심사</option>
-                <option value="interview">💼 영어 면접 연습</option>
-                <option value="free">💬 일상 자유 대화</option>
-              </select>
-            </div>
-          </div>
-          <button onclick="resetConversation()" class="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100" title="대화 초기화">
-            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <!-- Chat Messages Container -->
-        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 p-1 min-h-[340px] max-h-[460px]">
-          <!-- Messages will be dynamically rendered here -->
-        </div>
-
-        <!-- Feedback Drawer (Grammar & Natural Expression Tip) -->
-        <div id="tutor-feedback-card" class="hidden bg-amber-50/80 border border-amber-200 rounded-xl p-3 text-xs space-y-1 transition-all">
-          <div class="flex items-center justify-between text-amber-800 font-bold">
-            <span class="flex items-center gap-1"><i data-lucide="lightbulb" class="w-3.5 h-3.5 text-amber-600"></i> AI 표현 피드백 & 교정</span>
-            <button onclick="document.getElementById('tutor-feedback-card').classList.add('hidden')" class="text-amber-500 hover:text-amber-800">
-              <i data-lucide="x" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-          <p id="tutor-feedback-content" class="text-amber-900 leading-relaxed"></p>
-        </div>
-
-        <!-- Chat Input Form -->
-        <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-2">
-          <button id="btn-chat-mic" onclick="toggleChatVoiceInput()" class="p-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-600 active:scale-95 transition-all" title="음성으로 말하기">
-            <i data-lucide="mic" class="w-5 h-5"></i>
-          </button>
-          <input type="text" id="chat-input-text" placeholder="영어로 대답해보세요 (한국어도 가능)..." class="flex-1 bg-transparent text-xs text-slate-800 placeholder-slate-400 outline-none px-1" onkeydown="if(event.key === 'Enter') sendChatMessage()">
-          <button onclick="sendChatMessage()" class="p-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition-all shadow-sm">
-            <i data-lucide="send" class="w-4 h-4"></i>
-          </button>
-        </div>
-      </section>
-
-      <!-- ============================================== -->
-      <!-- TAB 4: 문장 만들기 & 영작 (Sentence Builder)   -->
-      <!-- ============================================== -->
-      <section id="tab-sentence" class="tab-panel hidden p-4 space-y-4">
-        <div>
-          <h2 class="text-lg font-bold text-slate-900">문장 만들기 드릴</h2>
-          <p class="text-xs text-slate-500">단어 블록을 순서대로 조합하여 올바른 영문장을 완성하세요</p>
-        </div>
-
-        <!-- Sentence Puzzle Box -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-5">
-          <div class="flex items-center justify-between text-xs">
-            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 font-semibold rounded-lg">어순 트레이닝</span>
-            <span id="sentence-counter" class="text-slate-400">문항 1 / 5</span>
-          </div>
-
-          <!-- Target Korean Meaning -->
-          <div class="bg-slate-50 p-4 rounded-xl text-center border border-slate-100">
-            <span class="text-[11px] font-semibold text-slate-400">만들어야 할 문장</span>
-            <h3 id="target-sentence-kr" class="text-base font-bold text-slate-800 mt-1">
-              "제가 회의 일정을 변경할 수 있을까요?"
-            </h3>
-          </div>
-
-          <!-- Built Sentence Slot Area -->
-          <div class="space-y-1.5">
-            <div class="text-[11px] font-medium text-slate-500 flex justify-between">
-              <span>조합된 문장:</span>
-              <button onclick="resetCurrentSentenceSlot()" class="text-slate-400 hover:text-slate-600 text-[10px]">다시 비우기</button>
-            </div>
-            <div id="sentence-slot-area" class="min-h-[56px] p-2.5 bg-slate-100 rounded-xl border-2 border-dashed border-slate-300 flex flex-wrap gap-2 items-center">
-              <!-- Selected Word Chips dropped here -->
-              <span id="slot-placeholder" class="text-xs text-slate-400 w-full text-center">아래 단어를 탭하여 순서대로 넣으세요</span>
-            </div>
-          </div>
-
-          <!-- Available Word Bank -->
-          <div class="space-y-1.5 pt-2 border-t border-slate-100">
-            <div class="text-[11px] font-medium text-slate-500">단어 보관함 (클릭하여 선택):</div>
-            <div id="sentence-bank-area" class="flex flex-wrap gap-2 min-h-[50px] items-center">
-              <!-- Word chips -->
-            </div>
-          </div>
-
-          <!-- Action & Validation Buttons -->
-          <div class="pt-2 flex gap-2">
-            <button onclick="checkSentenceAnswer()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-500/20 active:scale-98 transition-all flex items-center justify-center gap-1.5">
-              <i data-lucide="check-circle" class="w-4 h-4"></i> 정답 확인하기
-            </button>
-            <button onclick="showSentenceHint()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold text-xs transition-colors" title="힌트">
-              💡 힌트
-            </button>
-          </div>
-
-          <!-- Answer Result Alert -->
-          <div id="sentence-feedback-box" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
-        </div>
-
-        <button onclick="nextSentenceProblem()" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-semibold text-xs shadow transition-all">
-          다음 문장 도전하기
-        </button>
-      </section>
-
-    </main>
-
-    <!-- Bottom Navigation Bar (App Bar) -->
-    <nav class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 px-3 flex items-center justify-around z-20">
-      <button onclick="switchTab('vocab')" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-blue-600 transition-colors" data-tab="vocab">
-        <i data-lucide="book-open" class="w-5 h-5 mb-0.5"></i>
-        <span class="text-[10px] font-bold">단어장</span>
-      </button>
-
-      <button onclick="switchTab('shadowing')" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 transition-colors" data-tab="shadowing">
-        <i data-lucide="mic" class="w-5 h-5 mb-0.5"></i>
-        <span class="text-[10px] font-bold">쉐도잉</span>
-      </button>
-
-      <button onclick="switchTab('tutor')" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 transition-colors" data-tab="tutor">
-        <i data-lucide="message-square" class="w-5 h-5 mb-0.5"></i>
-        <span class="text-[10px] font-bold">AI 회화</span>
-      </button>
-
-      <button onclick="switchTab('sentence')" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-slate-400 hover:text-slate-600 transition-colors" data-tab="sentence">
-        <i data-lucide="layers" class="w-5 h-5 mb-0.5"></i>
-        <span class="text-[10px] font-bold">문장 만들기</span>
-      </button>
-    </nav>
-
-    <!-- Settings / API Key Modal -->
-    <div id="settings-modal" class="hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl border border-slate-200 space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900">앱 설정 & AI 연동</h3>
-          <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 p-1">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
-
-        <div class="space-y-3 text-xs">
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">AI 모델 연동 (선택사항)</label>
-            <p class="text-[11px] text-slate-400 mb-2">API 키가 없어도 내장된 인텔리전트 AI 튜터 봇으로 자유롭게 대화할 수 있습니다.</p>
-            <select id="setting-ai-provider" class="w-full border border-slate-200 rounded-lg p-2 text-xs text-slate-700 mb-2">
-              <option value="built-in">내장 스마트 시뮬레이션 (API 키 불필요)</option>
-              <option value="gemini">Google Gemini API</option>
-              <option value="openai">OpenAI ChatGPT API</option>
-            </select>
-            <input type="password" id="setting-api-key" placeholder="API Key 입력 (선택)" class="w-full border border-slate-200 rounded-lg p-2 text-xs">
-          </div>
-
-          <div class="pt-2 border-t border-slate-100">
-            <label class="block font-semibold text-slate-700 mb-1">발음 음성 속도</label>
-            <div class="flex items-center gap-2">
-              <input type="range" id="setting-speech-rate" min="0.6" max="1.3" step="0.1" value="0.95" class="w-full">
-              <span id="speech-rate-val" class="font-mono text-slate-600">0.95x</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="pt-2">
-          <button onclick="saveSettings()" class="w-full py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs shadow hover:bg-blue-700">
-            저장 및 닫기
-          </button>
         </div>
       </div>
     </div>
 
-  </div>
-
-  <!-- JavaScript Logic -->
-  <script>
-    // ==========================================
-    // 1. DATA REPOSITORY (단어, 쉐도잉, 퀴즈, 패턴)
-    // ==========================================
-    const vocabData = [
-      { id: 1, word: "Consistent", phonetic: "[kənˈsɪstənt]", category: "business", pos: "형용사", meaning: "일관된, 거듭되는", exEn: "She showed consistent improvement in English.", exKr: "그녀는 영어 실력에서 일관된 향상을 보였다." },
-      { id: 2, word: "Elaborate", phonetic: "[ɪˈlæbəreɪt]", category: "business", pos: "동사", meaning: "자세히 설명하다, 정교화하다", exEn: "Could you elaborate on that proposal?", exKr: "그 제안에 대해 자세히 설명해 주시겠어요?" },
-      { id: 3, word: "Affordable", phonetic: "[əˈfɔːrdəbl]", category: "daily", pos: "형용사", meaning: "가격이 알맞은, 감당할 수 있는", exEn: "We found a good hotel at an affordable price.", exKr: "우리는 알맞은 가격의 좋은 호텔을 찾았다." },
-      { id: 4, word: "Itinerary", phonetic: "[aɪˈtɪnəreri]", category: "travel", pos: "명사", meaning: "여행 일정표", exEn: "Let's review our flight itinerary for tomorrow.", exKr: "내일 비행기 여행 일정표를 검토해 보자." },
-      { id: 5, word: "Spontaneous", phonetic: "[spɑːnˈteɪniəs]", category: "daily", pos: "형용사", meaning: "자발적인, 즉흥적인", exEn: "We took a spontaneous weekend road trip.", exKr: "우리는 즉흥적으로 주말 드라이브 여행을 떠났다." },
-      { id: 6, word: "Perspective", phonetic: "[pərˈspektɪv]", category: "business", pos: "명사", meaning: "관점, 시각", exEn: "Try looking at the problem from a fresh perspective.", exKr: "새로운 관점에서 문제를 바라보세요." },
-      { id: 7, word: "Baggage claim", phonetic: "[ˈbæɡɪdʒ kleɪm]", category: "travel", pos: "명사", meaning: "수하물 찾는 곳", exEn: "Where is the baggage claim area for flight 204?", exKr: "204편 수하물 찾는 곳이 어디인가요?" },
-      { id: 8, word: "Appreciate", phonetic: "[əˈpriːʃieɪt]", category: "daily", pos: "동사", meaning: "고마워하다, 인정하다", exEn: "I really appreciate your kind help.", exKr: "도와주셔서 진심으로 감사드립니다." }
-    ];
-
-    const shadowingSentences = [
-      { id: 1, topic: "카페 주문", en: "Can I get an iced Americano with oat milk, please?", kr: "오트 밀크로 바꾼 아이스 아메리카노 한 잔 주시겠어요?" },
-      { id: 2, topic: "비즈니스 요청", en: "Could you please elaborate on that point in more detail?", kr: "그 부분에 대해 조금 더 자세히 설명해 주실 수 있나요?" },
-      { id: 3, topic: "공항 체크인", en: "I would like a window seat if there is one available.", kr: "가능하다면 창가 좌석으로 부탁드립니다." },
-      { id: 4, topic: "호텔 요청", en: "Could we have some extra towels sent up to our room?", kr: "저희 방으로 수건 몇 장 더 올려 보내주시겠어요?" },
-      { id: 5, topic: "의견 제안", en: "From my perspective, this solution might save us valuable time.", kr: "제 관점에서는, 이 해결책이 소중한 시간을 절약해 줄 것 같습니다." },
-      { id: 6, topic: "일상 대화", en: "It completely slipped my mind because I was in a rush.", kr: "너무 서두르느라 깜빡 잊어버렸어요." }
-    ];
-
-    const sentencePuzzles = [
-      {
-        id: 1,
-        kr: "제가 회의 일정을 변경할 수 있을까요?",
-        correct: ["Could", "I", "reschedule", "our", "meeting", "?"],
-        pool: ["Could", "I", "reschedule", "our", "meeting", "?", "Can", "cancel", "they", "schedule"]
-      },
-      {
-        id: 2,
-        kr: "여기서 가장 가까운 지하철역이 어디인가요?",
-        correct: ["Where", "is", "the", "nearest", "subway", "station", "?"],
-        pool: ["Where", "is", "the", "nearest", "subway", "station", "?", "Which", "bus", "far", "here"]
-      },
-      {
-        id: 3,
-        kr: "그것에 대해 너무 걱정하지 마세요.",
-        correct: ["Don't", "worry", "too", "much", "about", "it", "."],
-        pool: ["Don't", "worry", "too", "much", "about", "it", ".", "Never", "care", "very", "them"]
-      },
-      {
-        id: 4,
-        kr: "우리는 새로운 기회를 찾아야 합니다.",
-        correct: ["We", "need", "to", "look", "for", "new", "opportunities", "."],
-        pool: ["We", "need", "to", "look", "for", "new", "opportunities", ".", "should", "find", "a", "chance"]
-      }
-    ];
-
-    // ==========================================
-    // 2. STATE MANAGEMENT
-    // ==========================================
-    let currentTab = 'vocab';
-    let currentVocabIndex = 0;
-    let filteredVocabList = [...vocabData];
-    let isCardFlipped = false;
-    let quizScore = 0;
-    
-    let currentShadowIndex = 0;
-    let isRecording = false;
-    let recognition = null;
-    let recognizedTranscript = '';
-
-    let currentPuzzleIndex = 0;
-    let currentSlotWords = [];
-
-    let currentScenario = 'cafe';
-    let chatHistory = [];
-
-    let settings = {
-      aiProvider: 'built-in',
-      apiKey: '',
-      speechRate: 0.95
-    };
-
-    // ==========================================
-    // 3. INITIALIZATION
-    // ==========================================
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      initSpeechRecognition();
-      renderCurrentVocabCard();
-      renderCurrentShadowSentence();
-      renderCurrentPuzzle();
-      initScenarioChat(currentScenario);
+    <!-- 3-Column Studio Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       
-      // Load stored settings if available
-      const saved = localStorage.getItem('linguaflow_settings');
-      if (saved) {
-        try {
-          settings = { ...settings, ...JSON.parse(saved) };
-          document.getElementById('setting-ai-provider').value = settings.aiProvider;
-          document.getElementById('setting-api-key').value = settings.apiKey;
-          document.getElementById('setting-speech-rate').value = settings.speechRate;
-          document.getElementById('speech-rate-val').innerText = settings.speechRate + 'x';
-        } catch (e) {}
-      }
-
-      document.getElementById('setting-speech-rate').addEventListener('input', (e) => {
-        document.getElementById('speech-rate-val').innerText = e.target.value + 'x';
-      });
-    });
-
-    // ==========================================
-    // 4. SPEECH SYNTHESIS & RECOGNITION (TTS / STT)
-    // ==========================================
-    function speakText(text, rate = null) {
-      if (!('speechSynthesis' in window)) {
-        alert("이 브라우저는 음성 합성을 지원하지 않습니다.");
-        return;
-      }
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = rate || parseFloat(settings.speechRate) || 0.95;
-      
-      // Select natural US English voice if available
-      const voices = window.speechSynthesis.getVoices();
-      const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
-      if (enVoice) utterance.voice = enVoice;
-
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function initSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        console.warn("Speech Recognition API not supported in this browser.");
-        return;
-      }
-      recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      recognition.onstart = () => {
-        isRecording = true;
-        updateRecordingUI(true);
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        recognizedTranscript = transcript;
-        handleSpeechResult(transcript);
-      };
-
-      recognition.onerror = (event) => {
-        console.error("Speech Recognition Error:", event.error);
-        stopRecording();
-        document.getElementById('record-status-text').innerText = "인식 오류가 발생했습니다. 다시 시도해주세요.";
-      };
-
-      recognition.onend = () => {
-        isRecording = false;
-        updateRecordingUI(false);
-      };
-    }
-
-    function updateRecordingUI(active) {
-      const ring = document.getElementById('mic-pulse-ring');
-      const micBtn = document.getElementById('btn-record-shadow');
-      const statusText = document.getElementById('record-status-text');
-      
-      if (active) {
-        ring.classList.remove('hidden');
-        micBtn.classList.replace('bg-rose-500', 'bg-red-600');
-        statusText.innerText = "듣고 있습니다... 말씀하세요!";
-        statusText.classList.add('text-rose-600', 'font-bold');
-      } else {
-        ring.classList.add('hidden');
-        micBtn.classList.replace('bg-red-600', 'bg-rose-500');
-        statusText.innerText = "버튼을 누르고 영어로 말하세요";
-        statusText.classList.remove('text-rose-600', 'font-bold');
-      }
-    }
-
-    // ==========================================
-    // 5. TAB SWITCHING
-    // ==========================================
-    function switchTab(tabId) {
-      currentTab = tabId;
-      document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
-      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-
-      document.querySelectorAll('.nav-item').forEach(el => {
-        if (el.dataset.tab === tabId) {
-          el.classList.add('text-blue-600');
-          el.classList.remove('text-slate-400');
-        } else {
-          el.classList.remove('text-blue-600');
-          el.classList.add('text-slate-400');
-        }
-      });
-      lucide.createIcons();
-    }
-
-    // ==========================================
-    // 6. VOCABULARY & FLASHCARDS LOGIC
-    // ==========================================
-    function setVocabMode(mode) {
-      const cardView = document.getElementById('vocab-card-view');
-      const quizView = document.getElementById('vocab-quiz-view');
-      const btnCard = document.getElementById('btn-mode-card');
-      const btnQuiz = document.getElementById('btn-mode-quiz');
-
-      if (mode === 'card') {
-        cardView.classList.remove('hidden');
-        quizView.classList.add('hidden');
-        btnCard.className = "px-3 py-1.5 rounded-md bg-white text-blue-600 shadow-sm font-semibold transition-all";
-        btnQuiz.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all";
-      } else {
-        cardView.classList.add('hidden');
-        quizView.classList.remove('hidden');
-        btnQuiz.className = "px-3 py-1.5 rounded-md bg-white text-blue-600 shadow-sm font-semibold transition-all";
-        btnCard.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition-all";
-        loadNextQuizQuestion();
-      }
-    }
-
-    function filterVocab(cat) {
-      document.querySelectorAll('.cat-pill').forEach(btn => {
-        if (btn.dataset.cat === cat) {
-          btn.className = "cat-pill px-3 py-1.5 rounded-full bg-blue-600 text-white font-medium shadow-sm transition-colors whitespace-nowrap active";
-        } else {
-          btn.className = "cat-pill px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium hover:border-slate-300 transition-colors whitespace-nowrap";
-        }
-      });
-
-      if (cat === 'all') {
-        filteredVocabList = [...vocabData];
-      } else {
-        filteredVocabList = vocabData.filter(v => v.category === cat);
-      }
-      currentVocabIndex = 0;
-      renderCurrentVocabCard();
-    }
-
-    function renderCurrentVocabCard() {
-      const item = filteredVocabList[currentVocabIndex];
-      if (!item) return;
-
-      const cardInner = document.getElementById('flashcard-inner');
-      isCardFlipped = false;
-      cardInner.classList.remove('rotate-y-180');
-
-      document.getElementById('card-category').innerText = item.category;
-      document.getElementById('card-counter').innerText = `${currentVocabIndex + 1} / ${filteredVocabList.length}`;
-      document.getElementById('card-word').innerText = item.word;
-      document.getElementById('card-phonetic').innerText = item.phonetic;
-      document.getElementById('card-part-of-speech').innerText = item.pos;
-      document.getElementById('card-meaning').innerText = item.meaning;
-      document.getElementById('card-example-en').innerText = `"${item.exEn}"`;
-      document.getElementById('card-example-kr').innerText = item.exKr;
-      lucide.createIcons();
-    }
-
-    function flipCurrentCard() {
-      const cardInner = document.getElementById('flashcard-inner');
-      isCardFlipped = !isCardFlipped;
-      if (isCardFlipped) {
-        cardInner.classList.add('rotate-y-180');
-      } else {
-        cardInner.classList.remove('rotate-y-180');
-      }
-    }
-
-    function speakCurrentWord() {
-      const item = filteredVocabList[currentVocabIndex];
-      if (item) speakText(item.word);
-    }
-
-    function speakCurrentExample() {
-      const item = filteredVocabList[currentVocabIndex];
-      if (item) speakText(item.exEn);
-    }
-
-    function nextCard() {
-      if (currentVocabIndex < filteredVocabList.length - 1) {
-        currentVocabIndex++;
-      } else {
-        currentVocabIndex = 0;
-      }
-      renderCurrentVocabCard();
-    }
-
-    function prevCard() {
-      if (currentVocabIndex > 0) {
-        currentVocabIndex--;
-      } else {
-        currentVocabIndex = filteredVocabList.length - 1;
-      }
-      renderCurrentVocabCard();
-    }
-
-    function markCard(known) {
-      nextCard();
-    }
-
-    // Quiz Mode Logic
-    let currentQuizItem = null;
-    function loadNextQuizQuestion() {
-      const randIdx = Math.floor(Math.random() * vocabData.length);
-      currentQuizItem = vocabData[randIdx];
-      document.getElementById('quiz-question-word').innerText = currentQuizItem.word;
-
-      // 4 choices (1 correct, 3 distractors)
-      const distractors = vocabData.filter(v => v.id !== currentQuizItem.id);
-      distractors.sort(() => Math.random() - 0.5);
-      const choices = [currentQuizItem, ...distractors.slice(0, 3)];
-      choices.sort(() => Math.random() - 0.5);
-
-      const container = document.getElementById('quiz-options-container');
-      container.innerHTML = '';
-      choices.forEach(ch => {
-        const btn = document.createElement('button');
-        btn.className = "w-full text-left p-3.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex justify-between items-center";
-        btn.innerHTML = `<span>${ch.meaning}</span> <i data-lucide="circle" class="w-4 h-4 text-slate-300"></i>`;
-        btn.onclick = () => selectQuizOption(btn, ch.id === currentQuizItem.id);
-        container.appendChild(btn);
-      });
-      lucide.createIcons();
-    }
-
-    function selectQuizOption(btn, isCorrect) {
-      const allBtns = document.getElementById('quiz-options-container').querySelectorAll('button');
-      allBtns.forEach(b => b.disabled = true);
-
-      if (isCorrect) {
-        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-xs font-bold text-emerald-800 flex justify-between items-center";
-        btn.querySelector('i').replaceWith(document.createElement('span'));
-        quizScore += 10;
-        document.getElementById('quiz-score').innerText = `Score: ${quizScore}`;
-        speakText("Correct!");
-      } else {
-        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-rose-500 bg-rose-50 text-xs font-bold text-rose-800 flex justify-between items-center";
-      }
-    }
-
-    // ==========================================
-    // 7. SHADOWING & PRONUNCIATION EVALUATION
-    // ==========================================
-    function renderCurrentShadowSentence() {
-      const item = shadowingSentences[currentShadowIndex];
-      document.getElementById('shadow-topic-badge').innerText = item.topic;
-      document.getElementById('shadow-counter').innerText = `문장 ${currentShadowIndex + 1} / ${shadowingSentences.length}`;
-      document.getElementById('shadow-target-en').innerText = `"${item.en}"`;
-      document.getElementById('shadow-target-kr').innerText = item.kr;
-      document.getElementById('shadow-result-box').classList.add('hidden');
-    }
-
-    function playShadowingAudio(rate) {
-      const item = shadowingSentences[currentShadowIndex];
-      speakText(item.en, rate);
-    }
-
-    function toggleShadowRecording() {
-      if (!recognition) {
-        // Fallback for browsers without Web Speech Recognition (like Firefox without flags)
-        const mockInput = prompt("마이크 지원이 제한된 환경입니다. 연습한 영어 문장을 입력해보세요:", shadowingSentences[currentShadowIndex].en);
-        if (mockInput) handleSpeechResult(mockInput);
-        return;
-      }
-      if (isRecording) {
-        recognition.stop();
-      } else {
-        try {
-          recognition.start();
-        } catch(e) {
-          recognition.stop();
-        }
-      }
-    }
-
-    function stopRecording() {
-      if (recognition && isRecording) recognition.stop();
-    }
-
-    function calculateLevenshteinSimilarity(s1, s2) {
-      const clean1 = s1.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
-      const clean2 = s2.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
-      if (clean1 === clean2) return 100;
-      
-      const words1 = clean1.split(/\s+/);
-      const words2 = clean2.split(/\s+/);
-      let matchCount = 0;
-      words2.forEach(w => {
-        if (words1.includes(w)) matchCount++;
-      });
-      const ratio = Math.min(100, Math.round((matchCount / Math.max(words1.length, words2.length)) * 100));
-      return Math.max(20, ratio);
-    }
-
-    function handleSpeechResult(spokenText) {
-      const target = shadowingSentences[currentShadowIndex].en;
-      const score = calculateLevenshteinSimilarity(target, spokenText);
-
-      const resultBox = document.getElementById('shadow-result-box');
-      const recognizedEl = document.getElementById('shadow-recognized-text');
-      const scoreEl = document.getElementById('shadow-accuracy-score');
-      const feedbackEl = document.getElementById('shadow-feedback-text');
-
-      resultBox.classList.remove('hidden');
-      recognizedEl.innerText = `"${spokenText}"`;
-      scoreEl.innerText = `일치도: ${score}%`;
-
-      if (score >= 80) {
-        scoreEl.className = "text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-md";
-        feedbackEl.innerHTML = "<span class='text-emerald-700 font-semibold'>🎉 훌륭합니다! 원어민 발음과 억양이 매우 흡사합니다.</span>";
-      } else if (score >= 50) {
-        scoreEl.className = "text-xs font-extrabold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-md";
-        feedbackEl.innerHTML = "<span class='text-amber-700 font-semibold'>👍 좋습니다! 0.8배속으로 다시 듣고 단어 끝소리에 집중해보세요.</span>";
-      } else {
-        scoreEl.className = "text-xs font-extrabold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-md";
-        feedbackEl.innerHTML = "<span class='text-rose-700 font-semibold'>💪 괜찮아요! 원어민 소리를 2~3번 듣고 다시 시도해보세요.</span>";
-      }
-    }
-
-    function nextShadowSentence() {
-      if (currentShadowIndex < shadowingSentences.length - 1) currentShadowIndex++;
-      else currentShadowIndex = 0;
-      renderCurrentShadowSentence();
-    }
-
-    function prevShadowSentence() {
-      if (currentShadowIndex > 0) currentShadowIndex--;
-      else currentShadowIndex = shadowingSentences.length - 1;
-      renderCurrentShadowSentence();
-    }
-
-    // ==========================================
-    // 8. AI CONVERSATION TUTOR (CHLOE)
-    // ==========================================
-    const scenarioPresets = {
-      cafe: {
-        title: "카페에서 주문하기",
-        initialAi: "Hi there! Welcome to Coffee Central. What can I get started for you today?",
-        tips: "💡 팁: 'Can I get a ~ ?' 나 'I'd like a ~' 표현을 사용해보세요."
-      },
-      airport: {
-        title: "공항 입국 심사",
-        initialAi: "Good morning. May I see your passport and boarding pass, please? What is the purpose of your visit?",
-        tips: "💡 팁: 'I'm here for vacation/business' 또는 'I plan to stay for 5 days'라고 답해보세요."
-      },
-      interview: {
-        title: "영어 면접 연습",
-        initialAi: "Thank you for joining our interview today. To start off, could you briefly introduce yourself and your background?",
-        tips: "💡 팁: 자신의 경력과 강점을 2~3문장으로 간결하게 요약해보세요."
-      },
-      free: {
-        title: "일상 자유 대화",
-        initialAi: "Hey! How has your day been going so far? Tell me anything you feel like chatting about!",
-        tips: "💡 팁: 오늘 있었던 일이나 관심사에 대해 편하게 이야기해보세요."
-      }
-    };
-
-    function initScenarioChat(scenKey) {
-      currentScenario = scenKey;
-      chatHistory = [];
-      const preset = scenarioPresets[scenKey];
-      appendChatMessage('ai', preset.initialAi);
-      speakText(preset.initialAi);
-    }
-
-    function changeScenario(val) {
-      initScenarioChat(val);
-    }
-
-    function resetConversation() {
-      initScenarioChat(currentScenario);
-    }
-
-    function appendChatMessage(role, text) {
-      const container = document.getElementById('chat-messages');
-      const msgDiv = document.createElement('div');
-      
-      if (role === 'ai') {
-        msgDiv.className = "flex items-start gap-2 max-w-[88%]";
-        msgDiv.innerHTML = `
-          <div class="w-7 h-7 rounded-full bg-indigo-600 text-white flex-shrink-0 flex items-center justify-center text-[10px] font-bold shadow-xs">AI</div>
-          <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-xs p-3 shadow-xs space-y-1.5">
-            <p class="text-xs text-slate-800 leading-relaxed">${text}</p>
+      <!-- LEFT COLUMN: 공모전 타깃 설정 & AI 대본 생성기 (4 cols) -->
+      <section class="lg:col-span-5 space-y-5">
+        
+        <!-- STEP 1: 공모전 타깃 & 전략 세팅 -->
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-white/10 shadow-xl backdrop-blur-sm">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
             <div class="flex items-center gap-2">
-              <button onclick="speakText(this.dataset.msg)" data-msg="${text.replace(/"/g, '&quot;')}" class="text-[11px] text-blue-600 hover:text-blue-700 flex items-center gap-1 font-semibold">
-                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> 듣기
+              <span class="w-6 h-6 rounded-full bg-amber-500 text-black text-xs font-black flex items-center justify-center">1</span>
+              <h2 class="text-sm font-extrabold text-white tracking-wide">공모전 타깃 & 전략 설정</h2>
+            </div>
+            <span class="text-[11px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">필승 전략 엔진</span>
+          </div>
+
+          <div class="space-y-4">
+            <!-- 공모전 카테고리 -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">공모전 주최 / 분야 선택</label>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <button type="button" class="btn-category active px-3 py-2 rounded-lg border border-amber-500/50 bg-amber-500/10 text-amber-300 font-bold text-left flex items-center gap-2 transition" data-category="gov">
+                  <span>🏛️</span>
+                  <div>
+                    <div class="font-bold">공공 / 정책 / ESG</div>
+                    <div class="text-[10px] text-slate-400 font-normal">공익성 + 감동 반전</div>
+                  </div>
+                </button>
+                <button type="button" class="btn-category px-3 py-2 rounded-lg border border-white/10 bg-slate-800/50 hover:bg-slate-800 text-slate-300 text-left flex items-center gap-2 transition" data-category="brand">
+                  <span>🔥</span>
+                  <div>
+                    <div class="font-bold">브랜드 / 바이럴</div>
+                    <div class="text-[10px] text-slate-400 font-normal">도파민 + 위트 챌린지</div>
+                  </div>
+                </button>
+                <button type="button" class="btn-category px-3 py-2 rounded-lg border border-white/10 bg-slate-800/50 hover:bg-slate-800 text-slate-300 text-left flex items-center gap-2 transition" data-category="drama">
+                  <span>🎬</span>
+                  <div>
+                    <div class="font-bold">웹드라마 / 감성스토리</div>
+                    <div class="text-[10px] text-slate-400 font-normal">시네마틱 1인칭 독백</div>
+                  </div>
+                </button>
+                <button type="button" class="btn-category px-3 py-2 rounded-lg border border-white/10 bg-slate-800/50 hover:bg-slate-800 text-slate-300 text-left flex items-center gap-2 transition" data-category="info">
+                  <span>💡</span>
+                  <div>
+                    <div class="font-bold">아이디어 / 팩트폭격</div>
+                    <div class="text-[10px] text-slate-400 font-normal">초고속 1초 1정보</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- 공모전 주제 / 핵심 키워드 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-semibold text-slate-300">공모전 주제 또는 전달하고 싶은 메시지</label>
+                <span class="text-[10px] text-slate-400">클릭 시 자동 추천</span>
+              </div>
+              <div class="relative">
+                <input id="inputTopic" type="text" class="w-full bg-slate-950 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition" placeholder="예: 탄소중립 실천, 2030 청년 주거 정책, 전통시장 활성화 등" value="기후위기 실천 : 지구에게 보낸 45초의 부재중 전화">
+              </div>
+              <!-- Quick Topic Chips -->
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                <button type="button" class="chip-topic text-[11px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/5 transition" data-val="청년 고용 및 희망 인터뷰 : 벼랑 끝에서 만난 기회">청년고용</button>
+                <button type="button" class="chip-topic text-[11px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/5 transition" data-val="스마트폰 보행 교통안전 : 2초의 방심이 앗아간 것">교통안전</button>
+                <button type="button" class="chip-topic text-[11px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/5 transition" data-val="지역 소멸 방지 : 서울 사람이 모르는 로컬의 진짜 매력">로컬관광</button>
+                <button type="button" class="chip-topic text-[11px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/5 transition" data-val="마약/도박 중독 예방 : 한 번의 호기심이 지운 인생">중독예방</button>
+              </div>
+            </div>
+
+            <!-- 수상 공식 프레임워크 & 화법 스타일 -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">후킹 프레임워크</label>
+                <select id="selectHookFramework" class="w-full bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-400">
+                  <option value="twist">⚡ 충격 반전형 (비극 → 카타르시스)</option>
+                  <option value="curiosity">❓ 상식 파괴 질문형 ("아직도 00하세요?")</option>
+                  <option value="pov">🎭 POV 초현실 공감형 ("한국인 특 1초컷")</option>
+                  <option value="countdown">⏳ 타임어택 카운트다운 ("딱 10초 뒤 사라집니다")</option>
+                  <option value="cinema">🎬 시네마틱 흑백 독백 (감성 저격)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">나레이션 어조 (자연스러움)</label>
+                <select id="selectTone" class="w-full bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-400">
+                  <option value="friend">👥 20대 친구 대화체 (숨소리/말맛 100%)</option>
+                  <option value="deep">🎙️ 묵직한 다큐 성우톤 (감동 & 울림)</option>
+                  <option value="dopamine">⚡ 초스피드 쇼츠 크리에이터 (텐션 MAX)</option>
+                  <option value="whisper">🌙 감성 속삭임 독백 (ASMR 시네마)</option>
+                  <option value="reporter">📰 촌철살인 팩트 저격수 (신뢰도 최강)</option>
+                </select>
+              </div>
+            </div>
+
+            <button id="btnGenerateScript" class="w-full py-3 bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 hover:opacity-95 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-rose-500/20 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M7.5 5.6L10 7 8.6 4.5 10 2 7.5 3.4 5 2l1.4 2.5L5 7zm12 9.8L17 14l1.4 2.5L17 19l2.5-1.4L22 19l-1.4-2.5L22 14zM22 2l-2.5 1.4L17 2l1.4 2.5L17 7l2.5-1.4L22 7l-1.4-2.5zm-7.63 5.29c-.39-.39-1.02-.39-1.41 0L1.29 18.96c-.39.39-.39 1.02 0 1.41l2.34 2.34c.39.39 1.02.39 1.41 0L16.7 11.05c.39-.39.39-1.02 0-1.41l-2.33-2.35zm-1.03 5.49l-2.12-2.12 7.07-7.07 2.12 2.12-7.07 7.07z"/></svg>
+              <span>대상(Grand Prize) 확정형 숏폼 대본 생성하기</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: 씬별 타임라인 & 스토리보드 에디터 -->
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-white/10 shadow-xl backdrop-blur-sm">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-rose-500 text-white text-xs font-black flex items-center justify-center">2</span>
+              <h2 class="text-sm font-extrabold text-white tracking-wide">씬별 스토리보드 & 말맛 대본</h2>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button id="btnNaturalPolish" class="text-[11px] text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 px-2.5 py-1 rounded-md border border-emerald-500/30 flex items-center gap-1 transition" title="문어체 제거 및 자연스러운 구어체 윤문">
+                <span>✨</span> 말맛 극대화
+              </button>
+              <button id="btnAddScene" class="text-[11px] text-slate-300 bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded-md border border-white/10 transition">
+                + 씬 추가
               </button>
             </div>
           </div>
-        `;
+
+          <!-- Scenes Container -->
+          <div id="scenesContainer" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+            <!-- Dynamic Scenes populated by JS -->
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+              <span>총 예상 러닝타임:</span>
+              <span id="totalDurationLabel" class="text-amber-400 font-bold">45초</span>
+              <span class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">공모전 최적 45~55s</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span>씬 개수:</span>
+              <span id="sceneCountLabel" class="text-white font-bold">4개</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- MIDDLE COLUMN: 9:16 모바일 숏폼 인터랙티브 플레이어 (4 cols) -->
+      <section class="lg:col-span-4 flex flex-col items-center">
+        
+        <!-- Smartphone Container -->
+        <div class="relative w-[310px] sm:w-[330px] rounded-[44px] p-3 bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 shadow-2xl border-4 border-slate-700/80 ring-1 ring-white/10">
+          
+          <!-- Outer Phone Frame Glass reflection -->
+          <div class="relative w-full aspect-[9/16] bg-black rounded-[36px] overflow-hidden shadow-inner flex flex-col">
+            
+            <!-- Dynamic Island / Speaker notch -->
+            <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-24 h-5 bg-black rounded-full z-40 flex items-center justify-between px-2.5 border border-white/10 shadow-sm">
+              <span class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center">
+                <span class="w-1 h-1 rounded-full bg-blue-500/80"></span>
+              </span>
+              <span class="w-2 h-2 rounded-full bg-slate-900 border border-slate-800"></span>
+            </div>
+
+            <!-- Top Status Bar (Instagram/TikTok style) -->
+            <div class="absolute top-8 left-0 right-0 px-4 flex items-center justify-between text-[11px] text-white/90 z-30 drop-shadow">
+              <div class="flex items-center gap-1.5 font-bold">
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                <span>공모전 출품 모드</span>
+              </div>
+              <div class="flex items-center gap-2 text-[10px] bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/10">
+                <span id="playerSceneBadge">SCENE 1/4</span>
+                <span id="playerTimerBadge">00:00 / 00:45</span>
+              </div>
+            </div>
+
+            <!-- Story Progress Bars (TikTok / Reels style) -->
+            <div id="playerProgressBars" class="absolute top-2 left-3 right-3 flex gap-1 z-40">
+              <!-- Dynamically populated progress bars -->
+            </div>
+
+            <!-- Video Display Stage (Canvas & Overlays) -->
+            <div class="relative flex-1 w-full bg-slate-950 overflow-hidden flex items-center justify-center select-none" id="videoStageContainer">
+              
+              <!-- 9:16 Visual Canvas for Recording & Live Preview -->
+              <canvas id="videoCanvas" width="720" height="1280" class="w-full h-full object-cover"></canvas>
+
+              <!-- Dynamic Subtitle Overlay on Canvas -->
+              <div id="subtitleBox" class="absolute bottom-28 left-4 right-4 pointer-events-none text-center z-30 transition-all duration-200">
+                <div id="subKeywordBadge" class="inline-block px-2.5 py-0.5 bg-amber-500 text-black font-black text-xs rounded-md shadow-lg uppercase tracking-wider mb-1.5">
+                  핵심 후킹 포인트
+                </div>
+                <div id="subMainText" class="text-xl sm:text-2xl font-black text-white leading-tight drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)] tracking-tight px-2 py-1 rounded bg-black/40 backdrop-blur-[2px] inline-block border border-white/10">
+                  대본을 불러오는 중입니다...
+                </div>
+              </div>
+
+              <!-- Camera Direction Watermark Tag -->
+              <div id="cameraBadge" class="absolute top-16 left-4 z-30 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-[10px] text-amber-300 font-mono flex items-center gap-1">
+                <span>📹</span>
+                <span id="cameraText">초밀착 익스트림 클로즈업 + 줌인</span>
+              </div>
+
+              <!-- SFX Indicator Badge -->
+              <div id="sfxBadge" class="absolute top-16 right-4 z-30 bg-rose-500/80 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] text-white font-mono flex items-center gap-1">
+                <span>🔊</span>
+                <span id="sfxText">저음 심장박동 (Heartbeat)</span>
+              </div>
+
+              <!-- TikTok / Shorts Right Side Action Buttons Mockup -->
+              <div class="absolute right-2.5 bottom-28 z-30 flex flex-col items-center gap-3.5 text-white/90 drop-shadow">
+                <div class="flex flex-col items-center">
+                  <div class="w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center text-sm shadow">❤️</div>
+                  <span class="text-[10px] font-bold mt-0.5">24.8K</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center text-sm shadow">💬</div>
+                  <span class="text-[10px] font-bold mt-0.5">1,402</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center text-sm shadow">🏆</div>
+                  <span class="text-[10px] font-bold mt-0.5">대상</span>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-rose-500 border border-white p-0.5 animate-spin">
+                  <div class="w-full h-full rounded-full bg-black"></div>
+                </div>
+              </div>
+
+              <!-- Floating Audio Waveform Visualizer -->
+              <div class="absolute bottom-16 left-4 right-16 z-30 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
+                <div class="flex items-center gap-0.5 h-4" id="audioBars">
+                  <span class="w-1 bg-amber-400 rounded-full h-2"></span>
+                  <span class="w-1 bg-amber-400 rounded-full h-3"></span>
+                  <span class="w-1 bg-amber-400 rounded-full h-1"></span>
+                  <span class="w-1 bg-amber-400 rounded-full h-4"></span>
+                  <span class="w-1 bg-amber-400 rounded-full h-2"></span>
+                  <span class="w-1 bg-amber-400 rounded-full h-3"></span>
+                </div>
+                <span id="voiceStatusText" class="text-[10px] text-slate-300 truncate">AI 성우 : 자연스러운 20대 한국어 구어체</span>
+              </div>
+
+            </div>
+
+            <!-- Bottom Video Player Controls -->
+            <div class="bg-slate-950/95 border-t border-white/10 p-3 z-40 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <button id="btnPrevScene" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition" title="이전 씬">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <button id="btnPlayPause" class="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 hover:opacity-90 text-black font-bold flex items-center justify-center shadow-lg transition active:scale-95">
+                  <svg id="iconPlay" class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  <svg id="iconPause" class="w-5 h-5 fill-current hidden" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <button id="btnNextScene" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition" title="다음 씬">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+              </div>
+
+              <!-- TTS Voice test & Volume -->
+              <div class="flex items-center gap-2">
+                <button id="btnTTS" class="px-2.5 py-1 rounded-md bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-300 text-[11px] font-semibold flex items-center gap-1 transition" title="한국어 자연스러운 보이스 실시간 듣기">
+                  <span>🗣️</span> 나레이션 듣기
+                </button>
+                <button id="btnMute" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
+                  🔊
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Player Under Control Hints -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400">
+          <span class="flex items-center gap-1 text-[11px] bg-slate-900 border border-white/10 px-2.5 py-1 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 9:16 세로형 1080x1920 렌더링 지원
+          </span>
+          <span class="flex items-center gap-1 text-[11px] bg-slate-900 border border-white/10 px-2.5 py-1 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span> 1.8초 컷 전환 최적화
+          </span>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: 심사위원단 모의 평가 & 제출 기획서 (3 cols) -->
+      <section class="lg:col-span-3 space-y-5">
+        
+        <!-- STEP 3: 공모전 심사위원단 모의 평가 (Jury Simulator) -->
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-white/10 shadow-xl backdrop-blur-sm">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-cyan-500 text-black text-xs font-black flex items-center justify-center">3</span>
+              <h2 class="text-sm font-extrabold text-white tracking-wide">심사위원단 모의 평가</h2>
+            </div>
+            <span class="text-[10px] text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/30">실시간 채점</span>
+          </div>
+
+          <!-- Total Score Card -->
+          <div class="p-4 rounded-xl bg-gradient-to-br from-slate-950 to-slate-900 border border-amber-500/30 glow-gold relative overflow-hidden mb-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-[11px] text-amber-300 font-bold uppercase tracking-wider">공모전 종합 수상 지수</div>
+                <div class="text-3xl font-black text-white mt-1 flex items-baseline gap-1 font-brand">
+                  <span id="juryTotalScore">98.5</span>
+                  <span class="text-xs text-amber-400 font-normal">/ 100점</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-black text-xs font-black inline-block shadow">
+                  🏆 대상 확정권
+                </span>
+                <div class="text-[10px] text-slate-400 mt-1">수상 확률 99.4%</div>
+              </div>
+            </div>
+
+            <!-- Mini Radar/Bar Metrics -->
+            <div class="space-y-2 mt-4 pt-3 border-t border-white/10 text-[11px]">
+              <div>
+                <div class="flex justify-between text-slate-300 mb-0.5">
+                  <span>주제 적합성 및 공익/메시지</span>
+                  <span id="scoreRelevance" class="text-amber-400 font-bold">99점</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="barRelevance" class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: 99%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-300 mb-0.5">
+                  <span>초반 3초 후킹 및 완주율(Retention)</span>
+                  <span id="scoreHook" class="text-rose-400 font-bold">98점</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="barHook" class="bg-rose-400 h-full rounded-full transition-all duration-500" style="width: 98%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-300 mb-0.5">
+                  <span>대사 및 연출의 자연스러움</span>
+                  <span id="scoreNatural" class="text-emerald-400 font-bold">99점</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="barNatural" class="bg-emerald-400 h-full rounded-full transition-all duration-500" style="width: 99%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-300 mb-0.5">
+                  <span>독창성 및 차별화 (B-roll/연출)</span>
+                  <span id="scoreCreativity" class="text-cyan-400 font-bold">97점</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="barCreativity" class="bg-cyan-400 h-full rounded-full transition-all duration-500" style="width: 97%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 Personas Jury Feedbacks -->
+          <div class="space-y-2.5" id="juryCardsContainer">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- STEP 4: 공모전 필수 제출 서류 팩 (Submission Dossier) -->
+        <div class="p-5 rounded-2xl bg-slate-900/80 border border-white/10 shadow-xl backdrop-blur-sm">
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-500 text-black text-xs font-black flex items-center justify-center">4</span>
+              <h2 class="text-sm font-extrabold text-white tracking-wide">공모전 제출 서류 팩</h2>
+            </div>
+            <button id="btnCopySubmission" class="text-[11px] text-amber-300 hover:text-amber-200 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30 flex items-center gap-1 transition">
+              📋 전체 복사
+            </button>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <span class="text-slate-400 block text-[10px]">작품명 (Title)</span>
+              <div id="subDocTitle" class="font-bold text-white text-xs mt-0.5">45초의 부재중 전화 : 지구가 울린 마지막 SOS</div>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px]">기획 의도 (Intent)</span>
+              <p id="subDocIntent" class="text-slate-300 text-[11px] leading-relaxed mt-0.5">
+                기후위기라는 딱딱한 주제를 일상적인 스마트폰 부재중 알림으로 치환하여 2030 세대의 즉각적인 죄책감과 경각심을 자극.
+              </p>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px]">3줄 시놉시스 (Synopsis)</span>
+              <div id="subDocSynopsis" class="text-slate-300 text-[11px] leading-relaxed bg-slate-950 p-2.5 rounded-lg border border-white/5 space-y-1">
+                <div>1. 늦은 밤, 정체불명의 번호로부터 걸려온 긴급 전화.</div>
+                <div>2. 수화기 너머로 들려오는 북극의 빙하 깨지는 소리와 숨소리.</div>
+                <div>3. 통화 종료 화면과 함께 "당신은 이미 45초 전부터 전화를 끊지 못했습니다" 반전.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Video Export Modal Dialog -->
+  <div id="modalExport" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-white/15 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <button id="btnCloseModal" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 text-xl">
+          🎬
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-white">9:16 비디오 렌더링 & 내보내기</h3>
+          <p class="text-xs text-slate-400">공모전 규격 (1080x1920 세로형, 60fps, WebM/MP4)</p>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-950 border border-white/10 mb-4 space-y-3">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-400">렌더링 상태</span>
+          <span id="exportStatusBadge" class="text-amber-400 font-bold">준비 완료 (Ready)</span>
+        </div>
+        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+          <div id="exportProgressBar" class="bg-gradient-to-r from-amber-500 to-rose-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <p id="exportHintText" class="text-[11px] text-slate-400">
+          실시간 캔버스 비디오 프레임과 자연스러운 한국어 자막 및 애니메이션을 합성하여 녹화합니다.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="btnStartRecording" class="flex-1 py-3 bg-gradient-to-r from-rose-600 to-amber-600 hover:opacity-95 text-white font-extrabold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+          <span>⏺️</span> 실시간 녹화 시작 & 다운로드
+        </button>
+        <button id="btnCancelRecording" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-xl transition">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 bg-slate-900 border border-amber-500/40 text-amber-300 px-4 py-2.5 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-2 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+    <span id="toastIcon">✨</span>
+    <span id="toastMessage">안내 메시지</span>
+  </div>
+
+  <!-- Script Logic -->
+  <script>
+    // --- Preset Database (Winning Short-form Templates) ---
+    const WINNING_PRESETS = {
+      'preset-1': {
+        category: 'gov',
+        title: "지구에게 보낸 45초의 부재중 전화",
+        topic: "기후위기 실천 : 지구에게 보낸 45초의 부재중 전화",
+        hook: "twist",
+        tone: "deep",
+        docTitle: "45초의 부재중 전화 : 지구가 울린 마지막 SOS",
+        docIntent: "기후위기라는 거대하고 추상적인 담론을 일상에서 누구나 겪는 '스마트폰 부재중 전화'라는 친숙한 메타포로 치환하여, 관객이 스크롤을 멈추고 45초간 완전히 몰입하도록 기획했습니다.",
+        docSynopsis: [
+          "1. 늦은 밤, 발신자 표시 제한으로 울리는 스마트폰 화면과 극도의 긴장감.",
+          "2. 통화 연결 후 들려오는 빙하 깨지는 굉음과 타들어가는 산림의 숨소리.",
+          "3. 통화 종료 화면과 함께 '당신이 45초 동안 통화를 외면한 지금도 온도는 오르고 있습니다'라는 강렬한 카피로 여운."
+        ],
+        scenes: [
+          {
+            id: 1,
+            time: "0~3초",
+            duration: 3,
+            label: "초반 3초 충격 후킹",
+            subBadge: "시선 강탈 3초 법칙",
+            keyword: "발신자 표시 제한",
+            script: "야, 너 지금 오는 전화 절대 받지 마. ...진짜로.",
+            camera: "스마트폰 화면 초밀착 익스트림 클로즈업 + 진동 글리치",
+            sfx: "날카로운 진동음 + 심장 박동 저음 쿵(Heartbeat)",
+            color: "#1e1b4b",
+            bgType: "glitch"
+          },
+          {
+            id: 2,
+            time: "3~15초",
+            duration: 12,
+            label: "긴장감 빌드업 & 문제 제기",
+            subBadge: "의외성 폭발",
+            keyword: "침묵 속의 굉음",
+            script: "받는 순간 수화기 너머에서 얼음이 쩍 갈라지는 소리만 들리거든? 누구 장난전화인 줄 알았는데...",
+            camera: "화면 줌아웃 + 서서히 푸른빛에서 붉은빛으로 색감 전이",
+            sfx: "빙하 균열음 + 미세한 휘파람 바람소리",
+            color: "#0f172a",
+            bgType: "wave"
+          },
+          {
+            id: 3,
+            time: "15~35초",
+            duration: 20,
+            label: "클라이맥스 반전 & 공모전 핵심",
+            subBadge: "카타르시스 반전",
+            keyword: "지구의 마지막 SOS",
+            script: "그거, 북극 빙하가 마지막으로 살려달라고 보낸 진짜 SOS 신호였어. 우린 매일 알림만 끄고 있었던 거지.",
+            camera: "시네마틱 슬로우모션 + 타오르는 붉은 오렌지 그라디언트",
+            sfx: "장엄한 첼로 현악기 저음 + 카운트다운 째깍 소리",
+            color: "#450a0a",
+            bgType: "ember"
+          },
+          {
+            id: 4,
+            time: "35~45초",
+            duration: 10,
+            label: "강렬한 결말 & 심사위원 여운 CTA",
+            subBadge: "주최측 슬로건 각인",
+            keyword: "다음 부재중은 없습니다",
+            script: "다음 전화는 안 올지도 몰라. 지금 당장 불 하나 끄는 것부터, 답장해 줘.",
+            camera: "화면 페이드투블랙 + 볼드 화이트 타이포그래피 정중앙 배치",
+            sfx: "통화 종료 '뚜- 뚜- 뚜-' 전자음 + 깊은 여운 리버브",
+            color: "#020617",
+            bgType: "pulse"
+          }
+        ],
+        jury: {
+          total: 98.5,
+          relevance: 99,
+          hook: 98,
+          natural: 99,
+          creativity: 97,
+          comments: [
+            { name: "박성훈 영화감독 (연출/미장센)", role: "영상학회 심사위원", score: "98점", text: "초반 3초의 공포 영화적 서스펜스가 공익적 메시지로 전환되는 카타르시스가 압도적입니다. 감점 요인이 없습니다." },
+            { name: "이지민 마케터 (숏폼 알고리즘)", role: "글로벌 MCN 디렉터", score: "99점", text: "첫 문장의 어조가 너무나 자연스러워 틱톡/릴스 완주율 80% 이상이 보장됩니다. 2030 유저들이 댓글로 논쟁할 각입니다." },
+            { name: "김진석 교수 (공공소통브랜드)", role: "공모전 심사위원장", score: "99점", text: "훈계하지 않고 스스로 반성하게 만드는 세련된 공익 숏폼의 모범 답안입니다. 대상을 강력 추천합니다." }
+          ]
+        }
+      },
+      'preset-2': {
+        category: 'gov',
+        title: "자정 12시 편의점의 눈물",
+        topic: "청년고용 공모전 대상 : 자정 12시 편의점의 눈물",
+        hook: "pov",
+        tone: "friend",
+        docTitle: "자정 12시 편의점 : 폐기 삼각김밥과 바꾼 나의 내일",
+        docIntent: "스펙 경쟁에 지친 청년 취준생의 일상을 과장 없이 현실감 넘치는 리얼리티로 포착하여, 정부 청년 지원 정책이 '시혜'가 아닌 '청년의 존엄'을 지키는 든든한 버팀목임을 역설.",
+        docSynopsis: [
+          "1. 밤 12시, 편의점 구석에서 폐기 바코드를 찍으며 먹는 20대 청년의 덤덤한 독백.",
+          "2. 서류 50번째 탈락 문자를 보며 뱉는 현실적인 한숨과 눈물.",
+          "3. '청년도전지원사업' 멘토의 따뜻한 한마디와 함께 다시 운동화 끈을 묶는 희망의 엔딩."
+        ],
+        scenes: [
+          {
+            id: 1,
+            time: "0~3초",
+            duration: 3,
+            label: "초반 3초 공감 후킹",
+            subBadge: "현실 100% 공감",
+            keyword: "밤 12시 02분",
+            script: "폐기 찍힌 삼각김밥 뜯어본 사람만 안다. 그 차가운 밥알 맛.",
+            camera: "편의점 형광등 아래 삼각김밥 손 클로즈업 + 무보정 리얼톤",
+            sfx: "편의점 바코드 '삑-' 소리 + 비닐 부스럭거림",
+            color: "#18181b",
+            bgType: "raw"
+          },
+          {
+            id: 2,
+            time: "3~15초",
+            duration: 12,
+            label: "현실의 무게 & 눈물",
+            subBadge: "몰입감 고조",
+            keyword: "53번째 불합격",
+            script: "오늘도 '귀하의 뛰어난 역량에도 불구하고...' 문자 왔더라. 엄마한테는 야근한다고 거짓말 쳤는데.",
+            camera: "스마트폰 화면 불빛에 반사된 청년의 눈동자 줌인",
+            sfx: "문자 알림음 '카톡' + 쓸쓸한 피아노 단선율",
+            color: "#0f172a",
+            bgType: "wave"
+          },
+          {
+            id: 3,
+            time: "15~35초",
+            duration: 20,
+            label: "작은 온기와 전환점",
+            subBadge: "극적 전환",
+            keyword: "혼자가 아니라는 말",
+            script: "근데 여기서 안 무너지게 잡아준 손이 있었어. 상담사님이 그러시더라. '너 지금까지 진짜 치열하게 잘 살아온 거라고.'",
+            camera: "따뜻한 웜톤(오렌지빛)으로 조명 전환 + 자연스러운 미소",
+            sfx: "따뜻한 어쿠스틱 기타 아르페지오 + 깊은 숨소리",
+            color: "#292524",
+            bgType: "warm"
+          },
+          {
+            id: 4,
+            time: "35~45초",
+            duration: 10,
+            label: "희망의 엔딩 & 정책 메시지",
+            subBadge: "감동의 피날레",
+            keyword: "당신의 내일을 응원합니다",
+            script: "버텨줘서 고마워. 청년도전지원사업, 네 등 뒤에 서 있을게.",
+            camera: "당당하게 문을 열고 나서는 뒷모습 + 새벽빛 햇살",
+            sfx: "편의점 도어벨 맑은 차임벨 + 희망찬 스트링 크레센도",
+            color: "#1e293b",
+            bgType: "pulse"
+          }
+        ],
+        jury: {
+          total: 99.0,
+          relevance: 100,
+          hook: 98,
+          natural: 100,
+          creativity: 98,
+          comments: [
+            { name: "이지민 마케터 (숏폼 알고리즘)", role: "글로벌 MCN 디렉터", score: "100점", text: "대사가 '진짜 청년의 말'입니다. 어색한 멘트가 1글자도 없어서 보는 내내 가슴이 먹먹했습니다." },
+            { name: "김진석 교수 (공공소통브랜드)", role: "공모전 심사위원장", score: "99점", text: "정책 홍보 영상이 가질 수 있는 최고치의 진정성을 담아냈습니다. 만점에 가까운 수작입니다." },
+            { name: "박성훈 영화감독 (연출/미장센)", role: "영상학회 심사위원", score: "98점", text: "색온도 변화를 통한 감정의 이완 연출이 심사위원들의 탄성을 자아낼 것입니다." }
+          ]
+        }
+      },
+      'preset-3': {
+        category: 'brand',
+        title: "잔고 380원의 기적",
+        topic: "브랜드 바이럴 1등작 : 잔고 380원의 기적",
+        hook: "curiosity",
+        tone: "dopamine",
+        docTitle: "월급날 통장 잔고 380원의 기적 : 핀테크가 바꾼 일상",
+        docIntent: "MZ세대의 가장 처절하고도 유쾌한 '통장 텅장' 순간을 위트 있게 재구성하여, 앱의 직관적인 잔돈 모으기/자산 관리 기능을 폭발적인 바이럴 요소로 승화.",
+        docSynopsis: [
+          "1. 월급 들어온 지 3시간 만에 통장 잔고 380원이 된 충격적인 1인극.",
+          "2. 카드값, 월세, 할부금이 자동이체로 썰물처럼 빠져나가는 극적인 그래픽 연출.",
+          "3. 잔돈 380원으로 시작해 1년 뒤 비상금을 모으게 된 유쾌한 반전!"
+        ],
+        scenes: [
+          {
+            id: 1,
+            time: "0~3초",
+            duration: 3,
+            label: "도파민 후킹",
+            subBadge: "통장 잔고 공개",
+            keyword: "잔고 : 380원",
+            script: "야, 오늘 월급날이었거든? 근데 잔고 380원 남은 거 실화냐?",
+            camera: "스마트폰 뱅킹 잔고 화면 빠른 줌인 + 동공 지진 리액션",
+            sfx: "띠링- 경고음 + 뺨 때리는 찰진 효과음",
+            color: "#7f1d1d",
+            bgType: "glitch"
+          },
+          {
+            id: 2,
+            time: "3~15초",
+            duration: 12,
+            label: "빠른 템포 상황 전개",
+            subBadge: "1초 1드립",
+            keyword: "자동이체 스나이퍼",
+            script: "월세가 탕! 카드값이 탕탕! 내 통장은 그냥 공공 와이파이였던 거야. 스쳐만 지나감.",
+            camera: "스피디한 컷 편집 (0.8초 단위) + 만화적 효과선",
+            sfx: "총소리 효과음 + 빠른 비트 힙합 BGM",
+            color: "#1e1b4b",
+            bgType: "fast"
+          },
+          {
+            id: 3,
+            time: "15~35초",
+            duration: 20,
+            label: "핵심 솔루션 반전",
+            subBadge: "제품 자연스러운 노출",
+            keyword: "잔돈 저금통의 반격",
+            script: "근데 이 380원으로 매일 백 원씩 굴렸더니, 지금 비상금 80만 원 모았다? 비결이 뭐냐고?",
+            camera: "자신감 넘치는 턱 치켜들기 + 황금빛 코인 그래픽 샤워",
+            sfx: "잭팟 코인 쏟아지는 소리 + 신나는 비트 드롭",
+            color: "#064e3b",
+            bgType: "gold"
+          },
+          {
+            id: 4,
+            time: "35~45초",
+            duration: 10,
+            label: "바이럴 챌린지 CTA",
+            subBadge: "공유 욕구 자극",
+            keyword: "너 잔고 몇 원이야?",
+            script: "댓글에 지금 통장 잔고 적고 가라. 380원 밑으로 나오면 내가 커피 쏜다!",
+            camera: "카메라 윙크 + 댓글 유도 모션 그래픽 화살표",
+            sfx: "카메라 셔터음 + 경쾌한 팝 핑거스냅",
+            color: "#18181b",
+            bgType: "pulse"
+          }
+        ],
+        jury: {
+          total: 97.8,
+          relevance: 97,
+          hook: 99,
+          natural: 98,
+          creativity: 98,
+          comments: [
+            { name: "이지민 마케터 (숏폼 알고리즘)", role: "글로벌 MCN 디렉터", score: "99점", text: "댓글 유도(CTA)와 컷 전환 속도가 완벽합니다. 알고리즘 추천 탭 1순위 노출 확정입니다." },
+            { name: "박성훈 영화감독 (연출/미장센)", role: "영상학회 심사위원", score: "97점", text: "1인극 특유의 어색함이 전혀 없고, 리듬감이 춤을 추듯 경쾌합니다." },
+            { name: "김진석 교수 (공공소통브랜드)", role: "공모전 심사위원장", score: "97점", text: "브랜드 메시지를 억지스럽지 않게 유머러스하게 녹여내어 거부감이 없습니다." }
+          ]
+        }
+      },
+      'preset-4': {
+        category: 'gov',
+        title: "폰을 본 2초, 그 사이",
+        topic: "교통안전 공모전 대상 : 폰을 본 2초, 그 사이",
+        hook: "countdown",
+        tone: "reporter",
+        docTitle: "폰을 본 2초, 그 사이에 일어난 일 : 보행 중 스마트폰 교통사고",
+        docIntent: "스몸비(Smombie) 현상의 위험성을 시각화하여, '단 2초'의 고개 숙임이 인생 전체를 송두리째 바꿀 수 있음을 압도적인 시각적 대조로 전달.",
+        docSynopsis: [
+          "1. 횡단보도 앞, 스마트폰 알림창을 들여다보는 2초의 슬로우 모션.",
+          "2. 시속 50km로 달려오는 자동차의 제동 거리와 보행자의 무방비 상태.",
+          "3. 급브레이크 파열음과 함께 멈춰선 시간. '고개를 들면 보이는 것들' 캠페인 슬로건."
+        ],
+        scenes: [
+          {
+            id: 1,
+            time: "0~3초",
+            duration: 3,
+            label: "카운트다운 후킹",
+            subBadge: "긴박한 서스펜스",
+            keyword: "카운트다운 2초",
+            script: "지금부터 딱 2초만 눈 감아보세요. ...하나, 둘.",
+            camera: "초침 시계 클로즈업 + 급격한 암전과 점멸",
+            sfx: "극도로 증폭된 시계 초침 째깍 소리",
+            color: "#09090b",
+            bgType: "glitch"
+          },
+          {
+            id: 2,
+            time: "3~15초",
+            duration: 12,
+            label: "충격적인 팩트 비주얼",
+            subBadge: "데이터 시각화",
+            keyword: "28미터의 암흑",
+            script: "방금 그 2초 동안, 시속 50km의 자동차는 28미터를 무방비로 질주했습니다.",
+            camera: "도로 아스팔트 로우앵글 샷 + 급격한 헤드라이트 섬광",
+            sfx: "굉음의 엔진 가속음 + 타이어 마찰음",
+            color: "#18181b",
+            bgType: "raw"
+          },
+          {
+            id: 3,
+            time: "15~35초",
+            duration: 20,
+            label: "스몸비의 현실",
+            subBadge: "경각심 극대화",
+            keyword: "당신의 시야각 10도",
+            script: "스마트폰을 보는 순간 당신의 시야는 120도에서 10도로 좁아집니다. 초록불은 당신을 지켜주는 방패가 아닙니다.",
+            camera: "시야가 급격히 좁아지는 비네팅 블러 효과 + 앰뷸런스 경광등",
+            sfx: "깊은 저음 앰비언스 + 희미해지는 사이렌 소리",
+            color: "#450a0a",
+            bgType: "pulse"
+          },
+          {
+            id: 4,
+            time: "35~45초",
+            duration: 10,
+            label: "공모전 캠페인 슬로건",
+            subBadge: "대상 수상 슬로건",
+            keyword: "보행 중 폰 멈춤",
+            script: "스마트폰을 멈추고 고개를 드세요. 사랑하는 가족이 보입니다.",
+            camera: "카메라 하이앵글 줌아웃 + 횡단보도를 안전하게 건너는 따뜻한 햇살 컷",
+            sfx: "새들의 지저귐 + 평화로운 피아노 화음",
+            color: "#0f172a",
+            bgType: "warm"
+          }
+        ],
+        jury: {
+          total: 98.2,
+          relevance: 99,
+          hook: 99,
+          natural: 97,
+          creativity: 98,
+          comments: [
+            { name: "김진석 교수 (공공소통브랜드)", role: "공모전 심사위원장", score: "100점", text: "교통안전 공모전에서 가장 필요로 하는 충격 요법과 감성적 여운이 완벽한 균형을 이룹니다." },
+            { name: "박성훈 영화감독 (연출/미장센)", role: "영상학회 심사위원", score: "98점", text: "시야각이 10도로 좁아지는 비네팅 연출 아이디어는 영상 연출 부문 최고점감입니다." },
+            { name: "이지민 마케터 (숏폼 알고리즘)", role: "글로벌 MCN 디렉터", score: "97점", text: "초반 2초 카운트다운을 관객이 직접 따라 하게 만들어 완주율을 획기적으로 높였습니다." }
+          ]
+        }
+      },
+      'preset-5': {
+        category: 'drama',
+        title: "시골의 밤이 충격적인 이유",
+        topic: "지역관광 공모전 대상 : 시골의 밤이 충격적인 이유",
+        hook: "curiosity",
+        tone: "whisper",
+        docTitle: "서울 사람들은 평생 모르는 시골의 밤 : 은하수와 풀벌레의 위로",
+        docIntent: "도심의 소음과 불면증에 시달리는 현대인들에게 '지방 로컬'만이 선물할 수 있는 압도적인 밤하늘과 고요함을 ASMR 시네마틱으로 선물하여 로컬 방문 욕구를 극대화.",
+        docSynopsis: [
+          "1. 칠흑 같은 어둠 속, '불안 켜진 시골에서 뭘 하냐'는 친구의 질문으로 시작.",
+          "2. 고개를 들자 쏟아져 내리는 10만 개의 은하수 별빛과 풀벌레 소리.",
+          "3. '당신의 불면증이 3초 만에 치료되는 곳' 로컬 힐링 관광의 재발견."
+        ],
+        scenes: [
+          {
+            id: 1,
+            time: "0~3초",
+            duration: 3,
+            label: "ASMR 감성 후킹",
+            subBadge: "시각적 경이로움",
+            keyword: "새벽 2시의 암흑",
+            script: "서울 친구가 묻더라. 가로등도 없는 시골 밤에 무서워서 어떻게 있냐고.",
+            camera: "칠흑 같은 어둠 속 작은 촛불 하나 + 나직한 속삭임",
+            sfx: "장작 타는 소리 (ASMR crackle) + 시골 풀벌레 소리",
+            color: "#030712",
+            bgType: "raw"
+          },
+          {
+            id: 2,
+            time: "3~15초",
+            duration: 12,
+            label: "의외의 광경 공개",
+            subBadge: "압도적 비주얼",
+            keyword: "쏟아지는 은하수",
+            script: "불을 다 끄잖아? 그럼 서울에서는 평생 죽을 때까지 못 보는 게 보이거든.",
+            camera: "카메라 틸트업(하늘로) + 4K 타임랩스 은하수 별무리 폭발",
+            sfx: "깊고 맑은 바람 소리 + 몽환적인 앰비언트 신디사이저",
+            color: "#0b132b",
+            bgType: "star"
+          },
+          {
+            id: 3,
+            time: "15~35초",
+            duration: 20,
+            label: "진심 어린 위로",
+            subBadge: "마음 정화 독백",
+            keyword: "소음 없는 침묵",
+            script: "빌딩 불빛도, 자동차 경적도 없는 여기선... 내가 무슨 생각을 하는지 진짜 내 마음이 들려.",
+            camera: "별빛 아래 따뜻한 찻잔 김 모락모락 + 편안한 미소",
+            sfx: "은은한 어쿠스틱 피아노 + 귀뚜라미 울음",
+            color: "#1c1917",
+            bgType: "warm"
+          },
+          {
+            id: 4,
+            time: "35~45초",
+            duration: 10,
+            label: "로컬 방문 유도 엔딩",
+            subBadge: "여운 100% 카피",
+            keyword: "별 보러 올래?",
+            script: "오늘 밤, 너도 여기로 숨으러 올래? 강원도 영월의 밤.",
+            camera: "하늘 가득 찬 별자리 서서히 페이드아웃 + 감성 캘리그라피",
+            sfx: "부드러운 밤바람 리버브 + 차분한 종소리",
+            color: "#030712",
+            bgType: "pulse"
+          }
+        ],
+        jury: {
+          total: 98.7,
+          relevance: 99,
+          hook: 97,
+          natural: 100,
+          creativity: 99,
+          comments: [
+            { name: "박성훈 영화감독 (연출/미장센)", role: "영상학회 심사위원", score: "100점", text: "미장센과 사운드 디자인의 조화가 예술 영화 수준입니다. 숏폼의 한계를 뛰어넘었습니다." },
+            { name: "김진석 교수 (공공소통브랜드)", role: "공모전 심사위원장", score: "98점", text: "지자체 관광 영상의 고질병인 '관광지 나열'을 과감히 버리고 감성적 휴식을 판 탁월한 기획입니다." },
+            { name: "이지민 마케터 (숏폼 알고리즘)", role: "글로벌 MCN 디렉터", score: "98점", text: "불면증에 시달리는 2030 직장인들이 무한 반복 재생할 킬러 힐링 콘텐츠입니다." }
+          ]
+        }
+      }
+    };
+
+    // --- State Management ---
+    let currentPreset = 'preset-1';
+    let currentData = JSON.parse(JSON.stringify(WINNING_PRESETS['preset-1']));
+    let activeSceneIndex = 0;
+    let isPlaying = false;
+    let playTimer = null;
+    let sceneStartTime = 0;
+    let isMuted = false;
+    let isRecording = false;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
+    // --- Canvas & Visual Setup ---
+    const canvas = document.getElementById('videoCanvas');
+    const ctx = canvas.getContext('2d');
+    let animFrameId = null;
+    let canvasTime = 0;
+
+    // --- Audio Synthesis Setup (Web Speech API) ---
+    const synth = window.speechSynthesis;
+    let koreanVoice = null;
+
+    function initVoices() {
+      if (!synth) return;
+      const voices = synth.getVoices();
+      koreanVoice = voices.find(v => v.lang.startsWith('ko') || v.lang.includes('KR')) || voices[0];
+    }
+    if (synth) {
+      synth.onvoiceschanged = initVoices;
+      initVoices();
+    }
+
+    function speakCurrentScene() {
+      if (!synth || isMuted) return;
+      synth.cancel();
+      const scene = currentData.scenes[activeSceneIndex];
+      if (!scene) return;
+
+      const utterance = new SpeechSynthesisUtterance(scene.script);
+      if (koreanVoice) utterance.voice = koreanVoice;
+      utterance.lang = 'ko-KR';
+      
+      // Fine-tuned natural pitch and rate
+      if (currentData.tone === 'dopamine') {
+        utterance.rate = 1.25;
+        utterance.pitch = 1.1;
+      } else if (currentData.tone === 'deep' || currentData.tone === 'whisper') {
+        utterance.rate = 0.95;
+        utterance.pitch = 0.9;
       } else {
-        msgDiv.className = "flex items-end justify-end gap-2 ml-auto max-w-[88%]";
-        msgDiv.innerHTML = `
-          <div class="bg-blue-600 text-white rounded-2xl rounded-tr-xs p-3 shadow-xs">
-            <p class="text-xs leading-relaxed">${text}</p>
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+      }
+
+      utterance.onstart = () => {
+        document.getElementById('voiceStatusText').innerText = `🎙️ 재생 중: "${scene.script.substring(0, 18)}..."`;
+        startAudioWaveAnim();
+      };
+      utterance.onend = () => {
+        document.getElementById('voiceStatusText').innerText = `AI 성우 대기 중 (자연스러운 한국어 구어체)`;
+        stopAudioWaveAnim();
+      };
+
+      synth.speak(utterance);
+    }
+
+    let waveInterval = null;
+    function startAudioWaveAnim() {
+      clearInterval(waveInterval);
+      const bars = document.querySelectorAll('#audioBars span');
+      waveInterval = setInterval(() => {
+        bars.forEach(b => {
+          const h = Math.floor(Math.random() * 14) + 4;
+          b.style.height = `${h}px`;
+        });
+      }, 100);
+    }
+    function stopAudioWaveAnim() {
+      clearInterval(waveInterval);
+      const bars = document.querySelectorAll('#audioBars span');
+      bars.forEach((b, idx) => {
+        b.style.height = `${(idx % 3 + 1) * 3}px`;
+      });
+    }
+
+    // --- UI Render Functions ---
+    function renderScenesUI() {
+      const container = document.getElementById('scenesContainer');
+      container.innerHTML = '';
+
+      currentData.scenes.forEach((sc, idx) => {
+        const isActive = idx === activeSceneIndex;
+        const div = document.createElement('div');
+        div.className = `p-3.5 rounded-xl border transition cursor-pointer ${
+          isActive 
+            ? 'bg-amber-500/10 border-amber-500/50 shadow-md shadow-amber-500/5' 
+            : 'bg-slate-950/70 border-white/5 hover:border-white/20'
+        }`;
+        div.onclick = () => selectScene(idx);
+
+        div.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-md ${isActive ? 'bg-amber-500 text-black' : 'bg-slate-800 text-slate-300'} text-[10px] font-black flex items-center justify-center">
+                ${idx + 1}
+              </span>
+              <span class="text-xs font-bold ${isActive ? 'text-amber-300' : 'text-slate-200'}">${sc.label}</span>
+              <span class="text-[10px] text-slate-400 font-mono">(${sc.time})</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] px-2 py-0.5 rounded-full ${isActive ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-400'}">
+                ${sc.subBadge}
+              </span>
+              <button onclick="event.stopPropagation(); removeScene(${idx})" class="text-slate-500 hover:text-rose-400 text-xs px-1" title="씬 삭제">✕</button>
+            </div>
+          </div>
+
+          <!-- Script Editing Input -->
+          <div class="mb-2">
+            <textarea rows="2" class="scene-script-input w-full bg-slate-900 border ${isActive ? 'border-amber-500/30' : 'border-white/10'} rounded-lg p-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 resize-none transition" data-idx="${idx}">${sc.script}</textarea>
+          </div>
+
+          <!-- Camera & SFX tags -->
+          <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400 font-mono">
+            <div class="truncate bg-black/40 px-2 py-1 rounded border border-white/5 flex items-center gap-1" title="${sc.camera}">
+              <span>📹</span> <span class="truncate">${sc.camera}</span>
+            </div>
+            <div class="truncate bg-black/40 px-2 py-1 rounded border border-white/5 flex items-center gap-1" title="${sc.sfx}">
+              <span>🔊</span> <span class="truncate">${sc.sfx}</span>
+            </div>
           </div>
         `;
-      }
-      container.appendChild(msgDiv);
-      container.scrollTop = container.scrollHeight;
-      lucide.createIcons();
-      chatHistory.push({ role, text });
-    }
 
-    async function sendChatMessage() {
-      const input = document.getElementById('chat-input-text');
-      const userText = input.value.trim();
-      if (!userText) return;
+        container.appendChild(div);
+      });
 
-      appendChatMessage('user', userText);
-      input.value = '';
+      // Update script inputs event listener
+      document.querySelectorAll('.scene-script-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          currentData.scenes[idx].script = e.target.value;
+          updatePlayerOverlay();
+        });
+      });
 
-      // AI Response Simulation / API call
-      showTypingIndicator();
+      // Update Labels
+      const totalSec = currentData.scenes.reduce((acc, s) => acc + s.duration, 0);
+      document.getElementById('totalDurationLabel').innerText = `${totalSec}초`;
+      document.getElementById('sceneCountLabel').innerText = `${currentData.scenes.length}개`;
       
-      try {
-        const response = await generateTutorResponse(userText, currentScenario);
-        removeTypingIndicator();
-        appendChatMessage('ai', response.reply);
-        speakText(response.reply);
-
-        if (response.feedback) {
-          const feedbackCard = document.getElementById('tutor-feedback-card');
-          const feedbackContent = document.getElementById('tutor-feedback-content');
-          feedbackContent.innerHTML = response.feedback;
-          feedbackCard.classList.remove('hidden');
-          lucide.createIcons();
-        }
-      } catch (err) {
-        removeTypingIndicator();
-        appendChatMessage('ai', "I heard you! That was great practice. Keep going!");
-      }
+      renderProgressBars();
+      updatePlayerOverlay();
     }
 
-    function showTypingIndicator() {
-      const container = document.getElementById('chat-messages');
-      const div = document.createElement('div');
-      div.id = "typing-indicator";
-      div.className = "flex items-center gap-2 max-w-[80%]";
-      div.innerHTML = `
-        <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex-shrink-0 flex items-center justify-center text-[10px] font-bold">AI</div>
-        <div class="bg-slate-200/60 rounded-2xl p-2.5 flex items-center gap-1">
-          <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
-          <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-100"></span>
-          <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-200"></span>
-        </div>
-      `;
-      container.appendChild(div);
-      container.scrollTop = container.scrollHeight;
-    }
-
-    function removeTypingIndicator() {
-      const el = document.getElementById('typing-indicator');
-      if (el) el.remove();
-    }
-
-    // Smart Local AI Dialog Engine + Optional Gemini / OpenAI API integration
-    async function generateTutorResponse(userInput, scenario) {
-      if (settings.apiKey && settings.aiProvider === 'gemini') {
-        return callGeminiAPI(userInput, scenario);
-      } else if (settings.apiKey && settings.aiProvider === 'openai') {
-        return callOpenAIAPI(userInput, scenario);
-      }
-      
-      // Built-in intelligent simulation
-      await new Promise(r => setTimeout(r, 800));
-      const lower = userInput.toLowerCase();
-      
-      if (scenario === 'cafe') {
-        if (lower.includes('iced') || lower.includes('latte') || lower.includes('americano') || lower.includes('coffee')) {
-          return {
-            reply: "Sure thing! What size would you prefer: Small, Medium, or Large? And do you have any dietary preferences for milk?",
-            feedback: "💡 <b>칭찬:</b> 음료 메뉴를 정확히 전달하셨어요! <br>더 자연스러운 표현: <i>'Could I get a medium iced latte with oat milk, please?'</i>"
-          };
-        } else if (lower.includes('size') || lower.includes('medium') || lower.includes('large') || lower.includes('small')) {
-          return {
-            reply: "Got it! Would you like that for here or to go? We also have fresh blueberry scones today if you'd like a pastry.",
-            feedback: "💡 <b>원어민 팁:</b> 카페에서는 'For here, please' (매장 식사) 또는 'To go, please' (포장)으로 간단히 답할 수 있습니다."
-          };
+    function renderProgressBars() {
+      const container = document.getElementById('playerProgressBars');
+      container.innerHTML = '';
+      currentData.scenes.forEach((sc, idx) => {
+        const bar = document.createElement('div');
+        bar.className = 'flex-1 h-1 bg-white/30 rounded-full overflow-hidden';
+        const fill = document.createElement('div');
+        fill.className = 'h-full bg-amber-400 rounded-full transition-all duration-200';
+        if (idx < activeSceneIndex) {
+          fill.style.width = '100%';
+        } else if (idx === activeSceneIndex) {
+          fill.style.width = '60%';
+          fill.id = 'activeProgressBarFill';
         } else {
-          return {
-            reply: "Sounds wonderful. Your total is $4.50. Will you be paying with cash or card today?",
-            feedback: "💡 <b>표현 제안:</b> 'I'll pay by credit card' 또는 'Just tap to pay'라고 표현해보세요."
-          };
+          fill.style.width = '0%';
         }
-      } else if (scenario === 'airport') {
-        if (lower.includes('vacation') || lower.includes('travel') || lower.includes('sightseeing')) {
-          return {
-            reply: "Wonderful! How long do you plan to stay in the country, and where will you be staying?",
-            feedback: "💡 <b>칭찬:</b> 입국 목적을 깔끔하게 밝히셨습니다! <br>답변 예시: <i>'I'm staying at the Grand Hotel for one week.'</i>"
-          };
-        } else {
-          return {
-            reply: "Everything looks in order. Enjoy your stay and have a wonderful time!",
-            feedback: "💡 <b>심사 통과:</b> 'Thank you very much, have a nice day!' 라고 답하며 여권을 받으시면 됩니다."
-          };
-        }
-      } else {
-        return {
-          reply: `That's very interesting! Could you tell me more about how you usually practice English in your free time?`,
-          feedback: `💡 <b>표현 팁:</b> 'I usually practice by ~ing' 패턴으로 취미나 습관을 표현해보세요.`
-        };
-      }
-    }
-
-    async function callGeminiAPI(userInput, scenario) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${settings.apiKey}`;
-      const systemPrompt = `You are Chloe, a friendly native English tutor. The scenario is: ${scenario}. Keep replies under 2-3 sentences. Then provide a Korean feedback tip labeled as [FEEDBACK: ...] evaluating the user's sentence.`;
-      
-      const payload = {
-        contents: [
-          { role: 'user', parts: [{ text: `${systemPrompt}\nUser said: "${userInput}"` }] }
-        ]
-      };
-      
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "That's great! Let's continue.";
-      
-      const match = text.match(/\[FEEDBACK:\s*([\s\S]*?)\]/);
-      const cleanReply = text.replace(/\[FEEDBACK:[\s\S]*?\]/, '').trim();
-      return {
-        reply: cleanReply,
-        feedback: match ? match[1] : null
-      };
-    }
-
-    async function callOpenAIAPI(userInput, scenario) {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${settings.apiKey}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: `You are Chloe, an English tutor. Scenario: ${scenario}. Reply in natural English (max 2 sentences). Then provide [FEEDBACK: Korean tip].` },
-            { role: 'user', content: userInput }
-          ]
-        })
-      });
-      const data = await res.json();
-      const text = data.choices?.[0]?.message?.content || "Awesome! Let's keep going.";
-      const match = text.match(/\[FEEDBACK:\s*([\s\S]*?)\]/);
-      const cleanReply = text.replace(/\[FEEDBACK:[\s\S]*?\]/, '').trim();
-      return {
-        reply: cleanReply,
-        feedback: match ? match[1] : null
-      };
-    }
-
-    function toggleChatVoiceInput() {
-      if (!recognition) {
-        alert("이 브라우저는 음성 입력을 지원하지 않습니다. 텍스트로 입력해주세요.");
-        return;
-      }
-      recognition.onresult = (e) => {
-        const text = e.results[0][0].transcript;
-        document.getElementById('chat-input-text').value = text;
-        sendChatMessage();
-      };
-      recognition.start();
-    }
-
-    // ==========================================
-    // 9. SENTENCE BUILDER & UNSCRAMBLE DRILL
-    // ==========================================
-    function renderCurrentPuzzle() {
-      const puzzle = sentencePuzzles[currentPuzzleIndex];
-      document.getElementById('sentence-counter').innerText = `문항 ${currentPuzzleIndex + 1} / ${sentencePuzzles.length}`;
-      document.getElementById('target-sentence-kr').innerText = `"${puzzle.kr}"`;
-      document.getElementById('sentence-feedback-box').classList.add('hidden');
-
-      currentSlotWords = [];
-      updateSlotDisplay();
-
-      // Scramble words
-      const shuffled = [...puzzle.pool].sort(() => Math.random() - 0.5);
-      const bank = document.getElementById('sentence-bank-area');
-      bank.innerHTML = '';
-      
-      shuffled.forEach((word, idx) => {
-        const chip = document.createElement('button');
-        chip.className = "px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-xs hover:border-blue-500 hover:text-blue-600 active:scale-95 transition-all";
-        chip.innerText = word;
-        chip.dataset.wordId = `${word}-${idx}`;
-        chip.onclick = () => selectBankWord(word, chip);
-        bank.appendChild(chip);
+        bar.appendChild(fill);
+        container.appendChild(bar);
       });
     }
 
-    function selectBankWord(word, chipEl) {
-      currentSlotWords.push({ word, chipEl });
-      chipEl.classList.add('opacity-30', 'pointer-events-none');
-      updateSlotDisplay();
-    }
+    function renderJuryUI() {
+      const j = currentData.jury;
+      document.getElementById('juryTotalScore').innerText = j.total.toFixed(1);
+      document.getElementById('scoreRelevance').innerText = `${j.relevance}점`;
+      document.getElementById('barRelevance').style.width = `${j.relevance}%`;
 
-    function removeSlotWord(index) {
-      const removed = currentSlotWords.splice(index, 1)[0];
-      if (removed && removed.chipEl) {
-        removed.chipEl.classList.remove('opacity-30', 'pointer-events-none');
-      }
-      updateSlotDisplay();
-    }
+      document.getElementById('scoreHook').innerText = `${j.hook}점`;
+      document.getElementById('barHook').style.width = `${j.hook}%`;
 
-    function resetCurrentSentenceSlot() {
-      currentSlotWords.forEach(item => {
-        if (item.chipEl) item.chipEl.classList.remove('opacity-30', 'pointer-events-none');
-      });
-      currentSlotWords = [];
-      updateSlotDisplay();
-    }
+      document.getElementById('scoreNatural').innerText = `${j.natural}점`;
+      document.getElementById('barNatural').style.width = `${j.natural}%`;
 
-    function updateSlotDisplay() {
-      const slotArea = document.getElementById('sentence-slot-area');
-      slotArea.innerHTML = '';
+      document.getElementById('scoreCreativity').innerText = `${j.creativity}점`;
+      document.getElementById('barCreativity').style.width = `${j.creativity}%`;
 
-      if (currentSlotWords.length === 0) {
-        slotArea.innerHTML = '<span id="slot-placeholder" class="text-xs text-slate-400 w-full text-center">아래 단어를 탭하여 순서대로 넣으세요</span>';
-        return;
-      }
-
-      currentSlotWords.forEach((item, idx) => {
-        const chip = document.createElement('button');
-        chip.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold shadow-xs flex items-center gap-1 hover:bg-rose-500 transition-colors";
-        chip.innerHTML = `${item.word} <i data-lucide="x" class="w-3 h-3"></i>`;
-        chip.onclick = () => removeSlotWord(idx);
-        slotArea.appendChild(chip);
-      });
-      lucide.createIcons();
-    }
-
-    function checkSentenceAnswer() {
-      const puzzle = sentencePuzzles[currentPuzzleIndex];
-      const userJoined = currentSlotWords.map(w => w.word).join(' ');
-      const correctJoined = puzzle.correct.join(' ');
-      
-      const box = document.getElementById('sentence-feedback-box');
-      box.classList.remove('hidden');
-
-      if (userJoined.replace(/\s+\?/g, '?').replace(/\s+\./g, '.') === correctJoined.replace(/\s+\?/g, '?').replace(/\s+\./g, '.')) {
-        box.className = "p-3 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center justify-between";
-        box.innerHTML = `
-          <span>🎉 정답입니다! 완벽한 문장이에요.</span>
-          <button onclick="speakText('${correctJoined}')" class="text-emerald-700 underline font-bold flex items-center gap-1">
-            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> 듣기
-          </button>
+      // Jury Cards
+      const container = document.getElementById('juryCardsContainer');
+      container.innerHTML = '';
+      j.comments.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-xl bg-slate-950/60 border border-white/5 space-y-1.5 text-xs';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-slate-200">${c.name}</span>
+              <span class="text-[10px] text-cyan-400 font-mono">(${c.role})</span>
+            </div>
+            <span class="text-amber-400 font-black text-xs">${c.score}</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">"${c.text}"</p>
         `;
-        speakText(correctJoined);
-      } else {
-        box.className = "p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-        box.innerHTML = `❌ 아쉬워요! 단어 순서를 다시 확인해보세요.`;
+        container.appendChild(card);
+      });
+
+      // Update Top Badge
+      document.getElementById('topAwardBadge').innerHTML = `
+        <span>🏆 대상 (Grand Prize)</span>
+        <span class="text-xs bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">${j.total.toFixed(1)}점</span>
+      `;
+
+      // Update Dossier UI
+      document.getElementById('subDocTitle').innerText = currentData.docTitle;
+      document.getElementById('subDocIntent').innerText = currentData.docIntent;
+      const synBox = document.getElementById('subDocSynopsis');
+      synBox.innerHTML = currentData.docSynopsis.map(s => `<div>${s}</div>`).join('');
+    }
+
+    function selectScene(index) {
+      if (index < 0 || index >= currentData.scenes.length) return;
+      activeSceneIndex = index;
+      renderScenesUI();
+      updatePlayerOverlay();
+      if (isPlaying) {
+        speakCurrentScene();
       }
-      lucide.createIcons();
     }
 
-    function showSentenceHint() {
-      const puzzle = sentencePuzzles[currentPuzzleIndex];
-      const box = document.getElementById('sentence-feedback-box');
-      box.classList.remove('hidden');
-      box.className = "p-3 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200";
-      box.innerHTML = `💡 첫 번째 단어는 <b>"${puzzle.correct[0]}"</b> 입니다!`;
+    function removeScene(index) {
+      if (currentData.scenes.length <= 2) {
+        showToast("⚠️ 공모전 출품작은 최소 2개 이상의 씬이 필요합니다.");
+        return;
+      }
+      currentData.scenes.splice(index, 1);
+      if (activeSceneIndex >= currentData.scenes.length) {
+        activeSceneIndex = currentData.scenes.length - 1;
+      }
+      renderScenesUI();
+      showToast("🗑️ 씬이 삭제되었습니다.");
     }
 
-    function nextSentenceProblem() {
-      if (currentPuzzleIndex < sentencePuzzles.length - 1) currentPuzzleIndex++;
-      else currentPuzzleIndex = 0;
-      renderCurrentPuzzle();
+    function updatePlayerOverlay() {
+      const sc = currentData.scenes[activeSceneIndex];
+      if (!sc) return;
+
+      document.getElementById('playerSceneBadge').innerText = `SCENE ${activeSceneIndex + 1}/${currentData.scenes.length}`;
+      document.getElementById('cameraText').innerText = sc.camera;
+      document.getElementById('sfxText').innerText = sc.sfx;
+      document.getElementById('subKeywordBadge').innerText = sc.keyword || sc.subBadge;
+      document.getElementById('subMainText').innerText = sc.script;
+
+      // Timer badge
+      const totalSec = currentData.scenes.reduce((acc, s) => acc + s.duration, 0);
+      let elapsed = 0;
+      for (let i = 0; i < activeSceneIndex; i++) elapsed += currentData.scenes[i].duration;
+      document.getElementById('playerTimerBadge').innerText = `00:${String(elapsed).padStart(2, '0')} / 00:${String(totalSec).padStart(2, '0')}`;
     }
 
-    // ==========================================
-    // 10. MODAL & SETTINGS
-    // ==========================================
-    function openSettingsModal() {
-      document.getElementById('settings-modal').classList.remove('hidden');
+    // --- Dynamic Canvas Renderer (9:16 Video Simulation) ---
+    function drawVideoFrame() {
+      canvasTime += 0.03;
+      const width = canvas.width;
+      const height = canvas.height;
+      const sc = currentData.scenes[activeSceneIndex] || currentData.scenes[0];
+
+      // Clear & Background Gradient
+      const grad = ctx.createLinearGradient(0, 0, width, height);
+      if (sc.bgType === 'glitch') {
+        const r = Math.sin(canvasTime * 4) * 30 + 30;
+        grad.addColorStop(0, `rgb(${Math.floor(r + 20)}, 10, 30)`);
+        grad.addColorStop(1, '#050508');
+      } else if (sc.bgType === 'ember' || sc.bgType === 'warm') {
+        grad.addColorStop(0, '#431407');
+        grad.addColorStop(0.5, '#1c1917');
+        grad.addColorStop(1, '#0c0a09');
+      } else if (sc.bgType === 'gold') {
+        grad.addColorStop(0, '#78350f');
+        grad.addColorStop(0.5, '#1e1b4b');
+        grad.addColorStop(1, '#020617');
+      } else if (sc.bgType === 'star') {
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(0.6, '#020617');
+        grad.addColorStop(1, '#000000');
+      } else {
+        grad.addColorStop(0, '#1e293b');
+        grad.addColorStop(0.7, '#0f172a');
+        grad.addColorStop(1, '#020617');
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Dynamic Animated Shapes (Cinematic B-roll Simulation)
+      ctx.save();
+      const numParticles = 35;
+      for (let i = 0; i < numParticles; i++) {
+        const px = (Math.sin(canvasTime * 0.5 + i * 2) * 0.5 + 0.5) * width;
+        const py = ((canvasTime * 40 + i * 50) % (height + 100)) - 50;
+        const radius = (Math.sin(i + canvasTime) + 1.5) * 4;
+
+        ctx.beginPath();
+        ctx.arc(px, py, radius, 0, Math.PI * 2);
+        ctx.fillStyle = (sc.bgType === 'gold' || sc.bgType === 'ember')
+          ? `rgba(251, 191, 36, ${0.15 + (i % 5) * 0.08})`
+          : `rgba(96, 165, 250, ${0.12 + (i % 5) * 0.07})`;
+        ctx.fill();
+      }
+
+      // Dynamic Camera Motion / Grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.lineWidth = 1;
+      const gridSize = 80;
+      const offsetX = (canvasTime * 20) % gridSize;
+      for (let x = -gridSize; x < width + gridSize; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x + offsetX, 0);
+        ctx.lineTo(x + offsetX, height);
+        ctx.stroke();
+      }
+
+      // Focal Graphic Centerpiece (Cinematic Ring / Pulse)
+      const centerX = width / 2;
+      const centerY = height * 0.42;
+      const pulseSize = 140 + Math.sin(canvasTime * 2) * 20;
+
+      // Glow Ring
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, pulseSize, 0, Math.PI * 2);
+      ctx.strokeStyle = (sc.bgType === 'glitch') 
+        ? 'rgba(239, 68, 68, 0.4)' 
+        : 'rgba(245, 158, 11, 0.4)';
+      ctx.lineWidth = 6;
+      ctx.stroke();
+
+      // Inner Icon / Focus Circle
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, pulseSize * 0.6, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Center Award Watermark Text
+      ctx.font = 'bold 36px sans-serif';
+      ctx.fillStyle = '#f59e0b';
+      ctx.textAlign = 'center';
+      ctx.fillText(`SCENE ${activeSceneIndex + 1}`, centerX, centerY - 10);
+      ctx.font = '24px sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(sc.label, centerX, centerY + 28);
+
+      // Camera Crosshair Details (Cinematic Film Viewfinder)
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = 2;
+      const corner = 40;
+      const pad = 50;
+      // Top-left
+      ctx.beginPath();
+      ctx.moveTo(pad, pad + corner); ctx.lineTo(pad, pad); ctx.lineTo(pad + corner, pad);
+      ctx.stroke();
+      // Top-right
+      ctx.beginPath();
+      ctx.moveTo(width - pad - corner, pad); ctx.lineTo(width - pad, pad); ctx.lineTo(width - pad, pad + corner);
+      ctx.stroke();
+      // Bottom-left
+      ctx.beginPath();
+      ctx.moveTo(pad, height - pad - corner); ctx.lineTo(pad, height - pad); ctx.lineTo(pad + corner, height - pad);
+      ctx.stroke();
+      // Bottom-right
+      ctx.beginPath();
+      ctx.moveTo(width - pad - corner, height - pad); ctx.lineTo(width - pad, height - pad); ctx.lineTo(width - pad, height - pad - corner);
+      ctx.stroke();
+
+      // Viewfinder metadata
+      ctx.font = '22px monospace';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.textAlign = 'left';
+      ctx.fillText("REC ● 60FPS", pad + 15, pad + 35);
+      ctx.textAlign = 'right';
+      ctx.fillText("1080 x 1920", width - pad - 15, pad + 35);
+
+      // Canvas Burn-in Subtitle Rendering for Exported Video
+      ctx.save();
+      const subY = height * 0.78;
+      // Draw subtitle badge
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.roundRect(centerX - 120, subY - 60, 240, 36, 6);
+      ctx.fill();
+      ctx.font = 'bold 20px sans-serif';
+      ctx.fillStyle = '#000000';
+      ctx.textAlign = 'center';
+      ctx.fillText(sc.keyword || "후킹 키워드", centerX, subY - 35);
+
+      // Subtitle Main Text Box
+      ctx.font = 'bold 34px sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 4;
+      
+      // Multi-line wrap
+      wrapText(ctx, sc.script, centerX, subY, width - 120, 46);
+      ctx.restore();
+
+      ctx.restore();
+
+      animFrameId = requestAnimationFrame(drawVideoFrame);
     }
-    function closeSettingsModal() {
-      document.getElementById('settings-modal').classList.add('hidden');
+
+    function wrapText(context, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      let currentY = y;
+
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = context.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+          context.fillText(line, x, currentY);
+          line = words[n] + ' ';
+          currentY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      context.fillText(line, x, currentY);
     }
-    function saveSettings() {
-      settings.aiProvider = document.getElementById('setting-ai-provider').value;
-      settings.apiKey = document.getElementById('setting-api-key').value.trim();
-      settings.speechRate = parseFloat(document.getElementById('setting-speech-rate').value);
-      localStorage.setItem('linguaflow_settings', JSON.stringify(settings));
-      closeSettingsModal();
+
+    // --- Video Playback Engine ---
+    function togglePlay() {
+      if (isPlaying) {
+        pauseVideo();
+      } else {
+        playVideo();
+      }
     }
+
+    function playVideo() {
+      isPlaying = true;
+      document.getElementById('iconPlay').classList.add('hidden');
+      document.getElementById('iconPause').classList.remove('hidden');
+      speakCurrentScene();
+
+      // Schedule next scene transition based on scene duration
+      runSceneScheduler();
+    }
+
+    function pauseVideo() {
+      isPlaying = false;
+      document.getElementById('iconPlay').classList.remove('hidden');
+      document.getElementById('iconPause').classList.add('hidden');
+      if (synth) synth.cancel();
+      clearTimeout(playTimer);
+      stopAudioWaveAnim();
+    }
+
+    function runSceneScheduler() {
+      clearTimeout(playTimer);
+      if (!isPlaying) return;
+
+      const sc = currentData.scenes[activeSceneIndex];
+      const durationMs = (sc ? sc.duration : 4) * 1000;
+
+      playTimer = setTimeout(() => {
+        if (!isPlaying) return;
+        if (activeSceneIndex < currentData.scenes.length - 1) {
+          selectScene(activeSceneIndex + 1);
+          runSceneScheduler();
+        } else {
+          // Finished all scenes, loop or stop
+          selectScene(0);
+          pauseVideo();
+          showToast("🎉 전체 45초 숏폼 시연이 완료되었습니다!");
+        }
+      }, durationMs);
+    }
+
+    // --- Toast Function ---
+    function showToast(msg, icon = '✨') {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      document.getElementById('toastIcon').innerText = icon;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+
+    // --- One-Click Grand Prize Polish (대상 튜닝) ---
+    function executeGrandPrizePolish() {
+      // Polish scripts to ultra natural Korean expressions
+      const naturalPolishers = [
+        text => text.replace(/하였습니다/g, '했거든').replace(/해보는 것은 어떨까요\?/g, '해보자, 진짜로.'),
+        text => text.replace(/알고 계셨습니까\?/g, '너 이거 알고 있었어?').replace(/감사합니다/g, '잊지 마, 꼭이야.'),
+        text => text.replace(/생각됩니다/g, '확신해')
+      ];
+
+      currentData.scenes.forEach(sc => {
+        naturalPolishers.forEach(fn => {
+          sc.script = fn(sc.script);
+        });
+      });
+
+      // Maximize Jury scores
+      currentData.jury.total = 99.6;
+      currentData.jury.relevance = 100;
+      currentData.jury.hook = 100;
+      currentData.jury.natural = 100;
+      currentData.jury.creativity = 99;
+
+      renderScenesUI();
+      renderJuryUI();
+      showToast("🏆 심사위원단 알고리즘 100% 매칭: 대상(Grand Prize) 확정 퀄리티로 튜닝 완료!", "👑");
+    }
+
+    // --- Video Recording / Export Engine (Canvas + MediaRecorder) ---
+    function openExportModal() {
+      document.getElementById('modalExport').classList.remove('hidden');
+      document.getElementById('exportProgressBar').style.width = '0%';
+      document.getElementById('exportStatusBadge').innerText = '준비 완료 (Ready)';
+    }
+
+    function closeExportModal() {
+      document.getElementById('modalExport').classList.add('hidden');
+      if (isRecording && mediaRecorder) {
+        mediaRecorder.stop();
+        isRecording = false;
+      }
+    }
+
+    function startVideoRecording() {
+      if (isRecording) return;
+      isRecording = true;
+      recordedChunks = [];
+
+      const stream = canvas.captureStream(60);
+      let options = { mimeType: 'video/webm;codecs=vp9' };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options = { mimeType: 'video/webm' };
+      }
+
+      try {
+        mediaRecorder = new MediaRecorder(stream, options);
+      } catch (e) {
+        mediaRecorder = new MediaRecorder(stream);
+      }
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        isRecording = false;
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `WINNER_CUT_${currentData.title.replace(/\s+/g, '_')}_공모전제출용.webm`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 100);
+
+        document.getElementById('exportStatusBadge').innerText = '다운로드 완료! 🏆';
+        document.getElementById('exportProgressBar').style.width = '100%';
+        showToast("🎬 9:16 비디오 렌더링 파일 다운로드가 완료되었습니다!", "📥");
+      };
+
+      mediaRecorder.start();
+      document.getElementById('exportStatusBadge').innerText = '실시간 녹화 진행 중...';
+
+      // Animate progress bar during recording
+      const totalSec = currentData.scenes.reduce((acc, s) => acc + s.duration, 0);
+      let elapsedSec = 0;
+      selectScene(0);
+      playVideo();
+
+      const recordInterval = setInterval(() => {
+        elapsedSec += 1;
+        const pct = Math.min(100, Math.floor((elapsedSec / totalSec) * 100));
+        document.getElementById('exportProgressBar').style.width = `${pct}%`;
+
+        if (elapsedSec >= totalSec || !isRecording) {
+          clearInterval(recordInterval);
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+          }
+          pauseVideo();
+        }
+      }, 1000);
+    }
+
+    // --- Copy Submission Dossier ---
+    function copySubmissionDossier() {
+      const text = `[공모전 공식 출품 기획서]
+■ 작품명 : ${currentData.docTitle}
+■ 기획 의도 :
+${currentData.docIntent}
+
+■ 3줄 시놉시스 :
+${currentData.docSynopsis.join('\n')}
+
+■ 씬별 구성 및 러닝타임 (${currentData.scenes.reduce((acc, s) => acc + s.duration, 0)}초) :
+${currentData.scenes.map((s, idx) => `[Scene ${idx + 1}] (${s.time}) ${s.label}
+- 대사: ${s.script}
+- 연출: ${s.camera}
+- 음향: ${s.sfx}`).join('\n\n')}
+
+■ 기술 규격 : 해상도 1080x1920 (9:16 세로형), 60fps, 스테레오 사운드
+- 제작 엔진: WINNER CUT AI Studio`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("📋 공모전 제출 기획서가 클립보드에 복사되었습니다!");
+      });
+    }
+
+    // --- Event Listeners Init ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // Start Canvas Rendering Loop
+      drawVideoFrame();
+
+      // Initial Render
+      renderScenesUI();
+      renderJuryUI();
+
+      // Preset Change
+      document.getElementById('presetSelect').addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (WINNING_PRESETS[val]) {
+          currentPreset = val;
+          currentData = JSON.parse(JSON.stringify(WINNING_PRESETS[val]));
+          document.getElementById('inputTopic').value = currentData.topic;
+          document.getElementById('selectHookFramework').value = currentData.hook;
+          document.getElementById('selectTone').value = currentData.tone;
+          activeSceneIndex = 0;
+          renderScenesUI();
+          renderJuryUI();
+          showToast(`🏆 "${currentData.title}" 프리셋을 성공적으로 불러왔습니다!`);
+        }
+      });
+
+      // Quick Polish Button
+      document.getElementById('btnQuickPolish').addEventListener('click', executeGrandPrizePolish);
+
+      // Category Buttons
+      document.querySelectorAll('.btn-category').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.btn-category').forEach(b => {
+            b.classList.remove('border-amber-500/50', 'bg-amber-500/10', 'text-amber-300', 'font-bold');
+            b.classList.add('border-white/10', 'bg-slate-800/50', 'text-slate-300');
+          });
+          btn.classList.add('border-amber-500/50', 'bg-amber-500/10', 'text-amber-300', 'font-bold');
+          btn.classList.remove('border-white/10', 'bg-slate-800/50', 'text-slate-300');
+        });
+      });
+
+      // Topic Chips
+      document.querySelectorAll('.chip-topic').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.getElementById('inputTopic').value = chip.dataset.val;
+          showToast(`🎯 주제 설정 완료: ${chip.innerText}`);
+        });
+      });
+
+      // Generate Script Button
+      document.getElementById('btnGenerateScript').addEventListener('click', () => {
+        const topic = document.getElementById('inputTopic').value || "공모전 출품작";
+        const tone = document.getElementById('selectTone').value;
+        const hook = document.getElementById('selectHookFramework').value;
+
+        // Custom script generation algorithm based on topic
+        currentData.topic = topic;
+        currentData.docTitle = `${topic} : 45초의 반전`;
+        currentData.docIntent = `공모전 심사 기준에 맞춰 "${topic}"의 가치를 직관적인 숏폼 문법과 말맛으로 풀어냄.`;
+        
+        currentData.scenes = [
+          {
+            id: 1,
+            time: "0~3초",
+            duration: 3,
+            label: "초반 3초 충격 후킹",
+            subBadge: "시선 강탈",
+            keyword: "절대 보지 마세요",
+            script: `야, 너 지금 "${topic}" 때문에 고민하고 있지? ...솔직히 말해봐.`,
+            camera: "초근접 아이컨택 클로즈업 + 급속 줌인",
+            sfx: "날카로운 핑거스냅 + 저음 심장박동 쿵",
+            color: "#1e1b4b",
+            bgType: "glitch"
+          },
+          {
+            id: 2,
+            time: "3~15초",
+            duration: 12,
+            label: "문제 제기 & 공감 유발",
+            subBadge: "현실 공감",
+            keyword: "우리가 몰랐던 진실",
+            script: `다들 괜찮은 척 넘어가는데, 사실 이대로 가면 1년 뒤에 진짜 큰일 나거든? 데이터가 그걸 증명해.`,
+            camera: "시선 이동 패닝 + 흑백 대비 모노톤 연출",
+            sfx: "째깍째깍 초침 카운트다운 + 미세한 바람소리",
+            color: "#0f172a",
+            bgType: "raw"
+          },
+          {
+            id: 3,
+            time: "15~35초",
+            duration: 20,
+            label: "클라이맥스 핵심 솔루션",
+            subBadge: "공모전 핵심",
+            keyword: "반전의 시작",
+            script: `근데 해결책은 진짜 가까운 곳에 있었어. 생각보다 너무 간단해서 나도 소름 돋았잖아.`,
+            camera: "따뜻한 웜톤 라이팅 전환 + 시네마틱 슬로우모션",
+            sfx: "장엄한 오케스트라 크레센도 + 맑은 차임벨",
+            color: "#312e81",
+            bgType: "ember"
+          },
+          {
+            id: 4,
+            time: "35~45초",
+            duration: 10,
+            label: "공모전 심사위원 각인 CTA",
+            subBadge: "대상 수상 슬로건",
+            keyword: "지금 당신의 선택",
+            script: `망설일 시간 없어. 지금 당장 확인해 봐. 네 손으로 바꿀 수 있어.`,
+            camera: "정중앙 볼드 타이포그래피 + 강렬한 페이드아웃",
+            sfx: "묵직한 베이스 킥 + 잔잔한 여운 리버브",
+            color: "#020617",
+            bgType: "pulse"
+          }
+        ];
+
+        currentData.jury.total = 98.9;
+        activeSceneIndex = 0;
+        renderScenesUI();
+        renderJuryUI();
+        showToast("✨ 새로운 대상 확정형 숏폼 대본과 스토리보드가 생성되었습니다!");
+      });
+
+      // Natural Polish Button
+      document.getElementById('btnNaturalPolish').addEventListener('click', () => {
+        executeGrandPrizePolish();
+      });
+
+      // Add Scene Button
+      document.getElementById('btnAddScene').addEventListener('click', () => {
+        const nextId = currentData.scenes.length + 1;
+        currentData.scenes.push({
+          id: nextId,
+          time: `+${currentData.scenes.length * 10}초`,
+          duration: 10,
+          label: `추가 씬 ${nextId}`,
+          subBadge: "추가 연출",
+          keyword: "추가 포인트",
+          script: "이곳에 자연스러운 구어체 대본을 입력하세요.",
+          camera: "핸드헬드 무빙 + 바스트 샷",
+          sfx: "배경 앰비언스 사운드",
+          color: "#0f172a",
+          bgType: "pulse"
+        });
+        renderScenesUI();
+        showToast("➕ 새로운 씬이 추가되었습니다.");
+      });
+
+      // Player Controls
+      document.getElementById('btnPlayPause').addEventListener('click', togglePlay);
+      document.getElementById('btnPrevScene').addEventListener('click', () => {
+        if (activeSceneIndex > 0) selectScene(activeSceneIndex - 1);
+      });
+      document.getElementById('btnNextScene').addEventListener('click', () => {
+        if (activeSceneIndex < currentData.scenes.length - 1) selectScene(activeSceneIndex + 1);
+      });
+      document.getElementById('btnTTS').addEventListener('click', speakCurrentScene);
+      document.getElementById('btnMute').addEventListener('click', () => {
+        isMuted = !isMuted;
+        document.getElementById('btnMute').innerText = isMuted ? '🔇' : '🔊';
+        if (isMuted && synth) synth.cancel();
+      });
+
+      // Export Modal
+      document.getElementById('btnExportVideo').addEventListener('click', openExportModal);
+      document.getElementById('btnCloseModal').addEventListener('click', closeExportModal);
+      document.getElementById('btnCancelRecording').addEventListener('click', closeExportModal);
+      document.getElementById('btnStartRecording').addEventListener('click', startVideoRecording);
+
+      // Copy Submission Dossier
+      document.getElementById('btnCopySubmission').addEventListener('click', copySubmissionDossier);
+    });
   </script>
 </body>
 </html>
